@@ -293,7 +293,7 @@
     var radius = 10;
     var globe_sphere_obj_spawned = false;
     var specular_color = new THREE.Color(0x222222)
-    var emission_color = new THREE.Color(0x555555)
+    var emission_color = new THREE.Color(0xffffff)
     var lat_lon_mat = new THREE.MeshBasicMaterial();
     lat_lon_mat.transparent = true;
     lat_lon_mat.opacity = 0.4;
@@ -303,18 +303,35 @@
     //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
-    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day_2k.jpg');
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
+    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
+    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
+
     globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
-    globe_sphere_diff_tex.generateMipmaps = false;
+    //globe_sphere_diff_tex.generateMipmaps = false;
     globe_sphere_diff_tex.encoding = THREE.sRGBEncoding;
-    globe_sphere_diff_tex.anisotropy = 16;
-    
-    //texture.minFilter = THREE.LinearFilter;
-    //var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://1.bp.blogspot.com/-596lbFumbyA/Ukb1cHw21_I/AAAAAAAAK-U/KArMZAjbvyU/s1600/water_4k.png');
-    
+    globe_sphere_diff_tex.anisotropy = 16;    
 
-    //var globe_sphere_texture = THREE.ImageUtils.loadTexture('images/earthmap1k.jpg');
+    var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-specular.jpg');
+    globe_sphere_spec_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_spec_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_spec_tex.anisotropy = 16;
+    
+    var globe_sphere_bump_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-topo.jpg');
+    globe_sphere_bump_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_bump_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_bump_tex.anisotropy = 16;
+
+    var globe_sphere_emissive_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
+    globe_sphere_emissive_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_emissive_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_emissive_tex.anisotropy = 16; 
+  
+
 
 
     // LIGHTS
@@ -332,11 +349,13 @@
         globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
         globe_sphere_mat = new THREE.MeshPhongMaterial({
           map: globe_sphere_diff_tex,
-          //specularMap: globe_sphere_spec_tex,
-          specular: specular_color
-          //emissiveMap: globe_sphere_diff_tex,
-          //emissive: emission_color
-
+          specularMap: globe_sphere_spec_tex,
+          specular: specular_color,
+          bumpMap: globe_sphere_bump_tex,
+          bumpScale: 0.2,
+          emissive : emission_color,
+          emissiveMap: globe_sphere_emissive_tex,
+          emissiveIntensity: 0.1
         });
         globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
 
