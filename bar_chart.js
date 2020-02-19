@@ -11,10 +11,11 @@ var svg_div = d3.select("#side_box_div");
 console.log("SVG. Width: " + svg_width);
 console.log("SVG. Width: " + svg_height);
 
-// GET COVID-19 CSV URL
-//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_2019-ncov-Confirmed.csv";
+// COVID-19 CSV URL
+var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/archived_data/archived_time_series/time_series_2019-ncov-Confirmed.csv";
 
-var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+//my repo
+//var covid_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/data/time_series_19-covid-Confirmed.csv";
 
 
 // D3 elements
