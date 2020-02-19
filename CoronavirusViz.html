@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>COVID-19</title>
+
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    html,
+    body {
+      height: 100vh;
+      width: 100vh;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    div {
+      border-color: coral;
+      border-style: solid;
+      border-width: 1px;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    div.rounded_bckg{
+      border-radius: 5px;
+      background-color: rgb(41, 12, 14);
+      border-color: rgb(68, 32, 25);
+      border-style: solid;
+      border-width: 2px;
+      opacity: 0.9;
+    }
+
+    div.wrapper {
+      height: 100%;
+      width: 100%;
+      max-width: 1920px;
+      position: absolute;
+    }
+
+    div.hidden {
+      display: none;
+      visibility: hidden;
+    }
+
+    div.side_box {
+      position: absolute;
+      top: 100px;
+      left: 5px;
+      bottom: 5px;
+      width: 600px;
+      min-width: 600px;
+      padding: 0px;
+      overflow: auto;
+    }
+
+    div.slider_box {
+      position: absolute;
+      margin: 0px;
+      padding: 0px;
+      left: 610px;
+      right: 5px;
+      bottom: 5px;
+      height: 100px;
+      min-height: 100px;
+      padding: 20px;
+    }
+
+    div.slider_center {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 5px;
+      top: 60px;
+    }
+
+    input.slider {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+
+    }
+
+
+    label.date_selected {
+      position: absolute;
+      font-size: 15px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      padding: 5px;
+    }
+
+    div.date_wrapper {
+      position: absolute;
+
+      left: 620px;
+      width: 250px;
+      min-width: 250px;
+      height: 75px;
+      min-height: 75px;
+      top: 100px;      
+    }
+
+    div.date_selected {
+      position: absolute;
+      font-size: 30px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      padding: 5px;
+
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+    }
+
+    div.select_wrapper {
+      position: absolute;
+
+      left: 620px;
+      width: 350px;
+      min-width: 350px;
+      height: 75px;
+      min-height: 75px;
+    }
+
+
+    svg.fill {
+      width: 100%;
+      height: 2000px;
+      position: relative;
+      top: 0px;
+      left: 0px;
+      opacity: 0.9;
+    }
+
+
+
+    .stack-top {
+      z-index: 9;
+    }
+
+    .title_text {
+      position: absolute;
+      font-size: 60px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      padding: 5px;
+
+      right: 5px;
+      min-width: 1000px;
+      top: 10px;
+      left: 5px;
+    }
+
+    .bar_label {
+      font-size: 10px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+    }
+
+    .value_text {
+      font-size: 10px;
+      fill: black;
+      font-family: "Lato";
+      font-weight: 300;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="main_container" class="wrapper">
+    <div class="side_box stack-top " id="side_box_div">
+      <svg class="fill stack-top" style="background: white" id="bar_chart_container"></svg>
+    </div>
+    <div class="slider_box stack-top ">
+      <div class="slider_center stack-top">
+        <input class="slider stack-top" type="range" name="mySlider" id="mySlider" min="0" max="30" value="0">
+      </div>
+    </div>
+
+    <div class="date_wrapper stack-top " style="top:100px">
+      <label class="date_selected stack-top">DATE</label>
+      <div class="date_selected" id="date_text" style="font-size: 27px;">-</div>
+    </div>
+
+    <div class="select_wrapper stack-top " style="top:205px">
+      <label class="date_selected stack-top">COUNTRY/REGION</label>
+      <div class="date_selected" id="country_text" style="font-size: 27px;">-</div>
+    </div>
+
+    <div class="select_wrapper stack-top " style="top:290px">
+      <label class="date_selected stack-top">PROVINCE/STATE</label>
+      <div class="date_selected" id="province_text" style="font-size: 27px;">-</div>
+    </div>
+
+    <div class="select_wrapper stack-top " style="top:385px">
+      <label class="date_selected stack-top">CASES</label>
+      <div class="date_selected" id="cases_text" style="font-size: 32px;">-</div>
+    </div>
+
+    <div class="hidden" id="selected_index">-1</div>
+
+    <div class="title_text">COVID-19: CONFIRMED CASES</div>
+
+    <!-- RENDERING ELEMENT -->
+    <canvas id="renderCanvas"></canvas>
+  </div>
+
+
+
+  <script src="js/three.min.js"></script> <!-- THREE JS library -->
+  <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
+  <script src='js/dat.gui.min.js'></script> <!-- DAT GUI library -->
+  <script src="js/d3.min.js"></script> <!-- D3 library -->
+
+  <!-- BARCHARTS -->
+  <script src="bar_chart.js"></script>
+
+  <script>
+
+    //WINDOW, CANVAS and RENDERER
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    // 3D scene
+    var scene = new THREE.Scene();
+
+
+    // var camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.0001, 20000);
+    // CAMERA
+    var aspect = w / h;
+    var camera = new THREE.PerspectiveCamera(75, aspect, 1, 2000);
+    camera.filmOffset = -20.0;
+    camera.updateProjectionMatrix();
+    camera.position.z = 15;
+    camera.position.y = 10;
+
+    // RENDERER
+    var renderer = new THREE.WebGLRenderer({ antialias: true, canvas: renderCanvas });
+    renderer.context.enable(renderer.context.DEPTH_TEST);
+    renderer.setSize(w, h);
+    renderer.sortObjects = false;
+
+
+    // camera controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableRotate = true;
+    controls.enablePan = false;
+    controls.addEventListener('change', render);
+    controls.enableKeys = true;
+    controls.keys = {
+      LEFT: 37, //left arrow
+      UP: 38, // up arrow
+      RIGHT: 39, // right arrow
+      BOTTOM: 40 // down arrow
+    }
+    //controls.screenSpacePanning = true;
+
+    // event listeners
+    renderer.domElement.addEventListener('click', raycast, false);
+    renderer.domElement.addEventListener('touchend', onDocumentTouchEnd, false);
+
+
+    //***************************************************************************************
+    //
+    // SCENE OBJECTS
+    //
+    //***************************************************************************************
+
+    // HELPER GRID
+    var helper = new THREE.GridHelper(1000, 40, 0x303030, 0x303030);
+    helper.position.y = 0;
+    scene.add(helper);
+
+    // GLOBE
+    var globe_sphere_geo;
+    var globe_sphere_mat;
+    var globe_sphere_obj;
+    var radius = 10;
+    var globe_sphere_obj_spawned = false;
+    var specular_color = new THREE.Color(0x222222)
+    var emission_color = new THREE.Color(0x555555)
+    var lat_lon_mat = new THREE.MeshBasicMaterial();
+    lat_lon_mat.transparent = true;
+    lat_lon_mat.opacity = 0.4;
+
+
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
+    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('http://planetmaker.wthr.us/img/earth_gebco8_texture_8192x4096.jpg');
+    globe_sphere_diff_tex.anisotrophy = 2.0;
+    var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://1.bp.blogspot.com/-596lbFumbyA/Ukb1cHw21_I/AAAAAAAAK-U/KArMZAjbvyU/s1600/water_4k.png');
+    
+
+    //var globe_sphere_texture = THREE.ImageUtils.loadTexture('images/earthmap1k.jpg');
+
+
+    // LIGHTS
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
+    scene.add(directionalLight);
+    directionalLight.position.x = 0.0;
+    directionalLight.position.y = 0.0;
+    directionalLight.position.z = 1.0;
+    directionalLight.position.normalize();
+
+    // SPHERE CALLBACK (adds sphere after 1 sec)
+    function function_with_callback(subject, callback) {
+      console.log("Starting function with callback!: " + subject);
+      setTimeout(function () {
+        globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
+        globe_sphere_mat = new THREE.MeshPhongMaterial({
+          map: globe_sphere_diff_tex,
+          specularMap: globe_sphere_spec_tex,
+          specular: specular_color
+          //emissiveMap: globe_sphere_diff_tex,
+          //emissive: emission_color
+
+        });
+        globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
+
+        for (var i = 0; i < 12; i++) {
+          lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
+          lon_obj = new THREE.Mesh(lon, lat_lon_mat);
+          lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
+          globe_sphere_obj.add(lon_obj);
+        }
+
+        for (var i = -5; i < 6; i++) {
+          lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
+          lat_obj = new THREE.Mesh(lat, lat_lon_mat);
+          lat_obj.rotation.x = THREE.Math.degToRad(90.0);
+          lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
+          globe_sphere_obj.add(lat_obj);
+        }
+
+        callback();
+      }, 1000);
+    }
+
+    // SPHERE CALLBACK FUNCTION
+    function_with_callback('argument value', function () {
+      console.log("Callback function called!: ");
+      scene.add(globe_sphere_obj);
+      globe_sphere_obj_spawned = true;
+    });
+
+
+    // ADD DATA POINTS on globe
+    var data_points_pos_array = [];
+    var factor = 0.5;
+
+    function SCENE_3D_addDataPoints(sorted_data, key) {
+      sorted_data.forEach((d, i) => {
+        let Lat = d["Lat"];
+        let Long = d["Long"];
+
+        let value_rank_tuple = d[key];
+
+        // rotation object
+        var data_rotation = new THREE.Object3D;
+        data_rotation.rotation.z = THREE.Math.degToRad(Lat);
+        data_rotation.rotation.y = THREE.Math.degToRad(Long);
+
+        scene.add(data_rotation);
+
+        // data point mesh
+        var scale = Math.log(value_rank_tuple[0] + 0.1);
+        scale *= factor;
+        var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+
+        data_point = new THREE.CylinderGeometry(0.03, 0.03, 1, 8);
+        data_mat = new THREE.MeshBasicMaterial();
+        var data_point_obj = new THREE.Mesh(data_point, data_mat);
+        data_point_obj.rotation.z = THREE.Math.degToRad(90);
+        data_point_obj.scale.y = scale;
+        data_point_obj.name = String(d["Country/Region"]) + "$" + String(d["Province/State"] + "$" + String(i));
+
+        if (value_rank_tuple[0] == 0.0)
+          data_point_obj.visible = false;
+        else
+          data_point_obj.visible = true;
+
+        data_points_pos_array.push(data_point_obj);
+
+        data_point_obj.position.copy(position);
+        data_point_obj.updateMatrix();
+        data_rotation.add(data_point_obj);
+      });
+    }
+
+    function SCENE_3D_updateDataPoints(sorted_data, key) {
+      data_points_pos_array.forEach((d, i) => {
+
+        let value_rank_tuple = sorted_data[i][key]
+
+        var scale = Math.log(value_rank_tuple[0] + 0.1);
+        scale *= factor;
+
+        if (value_rank_tuple[0] == 0.0)
+          d.visible = false;
+        else
+          d.visible = true;
+
+        var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+        d.position.copy(position);
+        d.scale.y = scale;
+      })
+    }
+
+
+    function updateLightDirection() {
+      directionalLight.position.x = camera.position.x;
+      directionalLight.position.y = camera.position.y;
+      directionalLight.position.z = camera.position.z;
+    }
+
+
+
+    // RENDER FUNCTION
+    var render = function () {
+
+      requestAnimationFrame(render);
+
+      //update light position
+      updateLightDirection();
+
+      //controls.update();
+      renderer.render(scene, camera);
+    };
+
+
+    // RAYCASTING EVENT HANDLER
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    raycaster.params.Points.threshold = 2.0;
+
+    function raycast(event) {
+      console.log("Mouse click event.");
+
+      //1. sets the mouse position with a coordinate system where the center
+      mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+      mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+      console.log("Mouse click: " + mouse.x + ",  " + mouse.x);
+
+
+      //2. set the picking ray from the camera position and mouse coordinates
+      raycaster.setFromCamera(mouse, camera);
+      console.log("Mouse click: " + raycaster.ray.origin.x + ", " + raycaster.ray.origin.y + ", " + raycaster.ray.origin.z + "; "
+        + raycaster.ray.direction.x + ", " + raycaster.ray.direction.y + ", " + raycaster.ray.direction.z);
+
+      //3. compute intersections
+      let intersects = raycaster.intersectObjects(data_points_pos_array);
+      let name = intersects[0].object.name.split("$");
+      console.log("intersected : " + name);
+      d3.select("#country_text").html(name[0]);
+      d3.select("#province_text").html(name[1]);
+      d3.select("#selected_index").html(name[2]);
+    }
+
+    function onDocumentTouchEnd(event) {
+      console.log("Touch event.");
+      var touches = event.changedTouches;
+      console.log(touches[0]);
+
+      //1. sets the mouse position with a coordinate system where the center
+      mouse.x = (touches[0].pageX / renderer.domElement.clientWidth) * 2 - 1;
+      mouse.y = - (touches[0].pageY / renderer.domElement.clientHeight) * 2 + 1;
+      console.log("Touch event: " + mouse.x + ",  " + mouse.x);
+
+
+      //2. set the picking ray from the camera position and mouse coordinates
+      raycaster.setFromCamera(mouse, camera);
+      console.log("Touch event: " + raycaster.ray.origin.x + ", " + raycaster.ray.origin.y + ", " + raycaster.ray.origin.z + "; "
+        + raycaster.ray.direction.x + ", " + raycaster.ray.direction.y + ", " + raycaster.ray.direction.z);
+
+      //3. compute intersections
+      let intersects = raycaster.intersectObjects(data_points_pos_array);
+      let name = intersects[0].object.name.split("$");
+      console.log("intersected : " + name);
+      d3.select("#country_text").html(name[0]);
+      d3.select("#province_text").html(name[1]);
+      d3.select("#selected_index").html(name[2]);
+    }
+
+    // CALL RENDER
+    render();
+
+  </script>
+</body>
+
+</html>
