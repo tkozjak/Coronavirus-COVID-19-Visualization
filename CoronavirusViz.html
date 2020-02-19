@@ -30,7 +30,7 @@
       padding: 0px;
     }
 
-    div.rounded_bckg{
+    div.rounded_bckg {
       border-radius: 5px;
       background-color: rgb(41, 12, 14);
       border-color: rgb(68, 32, 25);
@@ -60,6 +60,14 @@
       min-width: 600px;
       padding: 0px;
       overflow: auto;
+
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    div.side_box::-webkit-scrollbar {
+      display: none;
+      /* Safari and Chrome */
     }
 
     div.slider_box {
@@ -107,7 +115,7 @@
       min-width: 250px;
       height: 75px;
       min-height: 75px;
-      top: 100px;      
+      top: 100px;
     }
 
     div.date_selected {
@@ -234,6 +242,8 @@
     var w = window.innerWidth;
     var h = window.innerHeight;
 
+    window.addEventListener('resize', onWindowResize, false);
+
     // 3D scene
     var scene = new THREE.Scene();
 
@@ -299,7 +309,7 @@
     lat_lon_mat.opacity = 0.4;
 
 
-    var gl = document.getElementById( "renderCanvas").getContext( "experimental-webgl" ); 
+    var gl = document.getElementById("renderCanvas").getContext("experimental-webgl");
     //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
@@ -311,14 +321,14 @@
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_diff_tex.generateMipmaps = false;
     globe_sphere_diff_tex.encoding = THREE.sRGBEncoding;
-    globe_sphere_diff_tex.anisotropy = 16;    
+    globe_sphere_diff_tex.anisotropy = 16;
 
     var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-specular.jpg');
     globe_sphere_spec_tex.magFilter = THREE.LinearFilter;
     globe_sphere_spec_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_spec_tex.generateMipmaps = false;
     globe_sphere_spec_tex.anisotropy = 16;
-    
+
     var globe_sphere_bump_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-topo.jpg');
     globe_sphere_bump_tex.magFilter = THREE.LinearFilter;
     globe_sphere_bump_tex.minFilter = THREE.LinearFilter;
@@ -329,8 +339,8 @@
     globe_sphere_emissive_tex.magFilter = THREE.LinearFilter;
     globe_sphere_emissive_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_spec_tex.generateMipmaps = false;
-    globe_sphere_emissive_tex.anisotropy = 16; 
-  
+    globe_sphere_emissive_tex.anisotropy = 16;
+
 
 
 
@@ -353,7 +363,7 @@
           specular: specular_color,
           bumpMap: globe_sphere_bump_tex,
           bumpScale: 0.2,
-          emissive : emission_color,
+          emissive: emission_color,
           emissiveMap: globe_sphere_emissive_tex,
           emissiveIntensity: 0.1
         });
@@ -386,9 +396,16 @@
     });
 
 
+    // color scale
+    const colorScale_2 = d3.scaleLinear()
+      .domain([0, 1000, 2000])
+      .range(['green', 'yellow', 'red'])
+      .interpolate(d3.interpolateRgb); //interpolateHsl interpolateHcl interpolateRgb
+
+
     // ADD DATA POINTS on globe
     var data_points_pos_array = [];
-    var factor = 0.5;
+    var factor = 0.3;
 
     function SCENE_3D_addDataPoints(sorted_data, key) {
       sorted_data.forEach((d, i) => {
@@ -405,12 +422,18 @@
         scene.add(data_rotation);
 
         // data point mesh
-        var scale = Math.log(value_rank_tuple[0] + 0.1);
+        let confirmed_value = value_rank_tuple[0];
+
+        var scale = Math.log(confirmed_value + 0.1);
         scale *= factor;
         var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
 
+        let color = colorScale_2(confirmed_value);
+        console.log(color);
+
         data_point = new THREE.CylinderGeometry(0.03, 0.03, 1, 8);
         data_mat = new THREE.MeshBasicMaterial();
+        data_mat.color = new THREE.Color(color);
         var data_point_obj = new THREE.Mesh(data_point, data_mat);
         data_point_obj.rotation.z = THREE.Math.degToRad(90);
         data_point_obj.scale.y = scale;
@@ -429,13 +452,19 @@
       });
     }
 
+
+
     function SCENE_3D_updateDataPoints(sorted_data, key) {
       data_points_pos_array.forEach((d, i) => {
 
-        let value_rank_tuple = sorted_data[i][key]
+        let value_rank_tuple = sorted_data[i][key];
+        let confirmed_value = value_rank_tuple[0];
 
-        var scale = Math.log(value_rank_tuple[0] + 0.1);
+        var scale = Math.log(confirmed_value + 0.1);
         scale *= factor;
+
+        let color = colorScale_2(confirmed_value);
+        console.log(color);
 
         if (value_rank_tuple[0] == 0.0)
           d.visible = false;
@@ -445,6 +474,7 @@
         var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
         d.position.copy(position);
         d.scale.y = scale;
+        d.material.color = new THREE.Color(color);
       })
     }
 
@@ -469,6 +499,12 @@
       renderer.render(scene, camera);
     };
 
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
 
     // RAYCASTING EVENT HANDLER
     var raycaster = new THREE.Raycaster();
@@ -491,11 +527,15 @@
 
       //3. compute intersections
       let intersects = raycaster.intersectObjects(data_points_pos_array);
-      let name = intersects[0].object.name.split("$");
-      console.log("intersected : " + name);
-      d3.select("#country_text").html(name[0]);
-      d3.select("#province_text").html(name[1]);
-      d3.select("#selected_index").html(name[2]);
+
+      if (typeof intersects[0] !== 'undefined') {
+        let name = intersects[0].object.name.split("$");
+        console.log("intersected : " + name);
+        d3.select("#country_text").html(name[0]);
+        d3.select("#province_text").html(name[1]);
+        d3.select("#selected_index").html(name[2]);
+      }
+
     }
 
     function onDocumentTouchEnd(event) {
@@ -516,11 +556,14 @@
 
       //3. compute intersections
       let intersects = raycaster.intersectObjects(data_points_pos_array);
-      let name = intersects[0].object.name.split("$");
-      console.log("intersected : " + name);
-      d3.select("#country_text").html(name[0]);
-      d3.select("#province_text").html(name[1]);
-      d3.select("#selected_index").html(name[2]);
+
+      if (typeof intersects[0] !== 'undefined') {
+        let name = intersects[0].object.name.split("$");
+        console.log("intersected : " + name);
+        d3.select("#country_text").html(name[0]);
+        d3.select("#province_text").html(name[1]);
+        d3.select("#selected_index").html(name[2]);
+      }
     }
 
     // CALL RENDER
