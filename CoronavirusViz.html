@@ -252,6 +252,8 @@
     renderer.context.enable(renderer.context.DEPTH_TEST);
     renderer.setSize(w, h);
     renderer.sortObjects = false;
+    renderer.gammaFactor = 2.2;
+    renderer.gammaOutput = true;
 
 
     // camera controls
@@ -297,11 +299,19 @@
     lat_lon_mat.opacity = 0.4;
 
 
+    var gl = document.getElementById( "renderCanvas").getContext( "experimental-webgl" ); 
+    //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
+
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
-    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day_2k.jpg');
+    globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
+    globe_sphere_diff_tex.generateMipmaps = false;
+    globe_sphere_diff_tex.encoding = THREE.sRGBEncoding;
+    globe_sphere_diff_tex.anisotropy = 16;
+    
     //texture.minFilter = THREE.LinearFilter;
-    var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://1.bp.blogspot.com/-596lbFumbyA/Ukb1cHw21_I/AAAAAAAAK-U/KArMZAjbvyU/s1600/water_4k.png');
+    //var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://1.bp.blogspot.com/-596lbFumbyA/Ukb1cHw21_I/AAAAAAAAK-U/KArMZAjbvyU/s1600/water_4k.png');
     
 
     //var globe_sphere_texture = THREE.ImageUtils.loadTexture('images/earthmap1k.jpg');
@@ -322,7 +332,7 @@
         globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
         globe_sphere_mat = new THREE.MeshPhongMaterial({
           map: globe_sphere_diff_tex,
-          specularMap: globe_sphere_spec_tex,
+          //specularMap: globe_sphere_spec_tex,
           specular: specular_color
           //emissiveMap: globe_sphere_diff_tex,
           //emissive: emission_color
