@@ -74,8 +74,8 @@
       position: absolute;
       margin: 0px;
       padding: 0px;
-      left: 610px;
-      right: 5px;
+      left: 620px;
+      right: 10px;
       bottom: 5px;
       height: 100px;
       min-height: 100px;
@@ -94,7 +94,6 @@
       position: absolute;
       width: 100%;
       height: 100%;
-
     }
 
 
@@ -237,7 +236,7 @@
 
     <div class="hidden" id="selected_index">-1</div>
 
-    <div class="title_text">CORONAVIRUS, COVID-19</div>
+    <div class="title_text">CORONAVIRUS  COVID-19</div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -270,10 +269,11 @@
     // CAMERA
     var aspect = w / h;
     var camera = new THREE.PerspectiveCamera(75, aspect, 1, 2000);
-    camera.filmOffset = -20.0;
+    //camera.filmOffset = -20.0;
+    camera.setViewOffset( w, h, w * -0.15, h * 0.05, w, h );
     camera.updateProjectionMatrix();
-    camera.position.z = 15;
-    camera.position.y = 10;
+    camera.position.z = 20;
+    camera.position.y = 5;
 
     // RENDERER
     var renderer = new THREE.WebGLRenderer({ antialias: true, canvas: renderCanvas });
