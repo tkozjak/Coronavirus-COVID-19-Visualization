@@ -98,6 +98,17 @@
     }
 
 
+    div.date_wrapper {
+      position: absolute;
+
+      left: 620px;
+      width: 200px;
+      min-width: 200px;
+      height: 125px;
+      min-height: 125px;
+      top: 100px;
+    }
+
     label.date_selected {
       position: absolute;
       font-size: 15px;
@@ -107,28 +118,36 @@
       padding: 5px;
     }
 
-    div.date_wrapper {
-      position: absolute;
-
-      left: 620px;
-      width: 250px;
-      min-width: 250px;
-      height: 75px;
-      min-height: 75px;
-      top: 100px;
-    }
-
     div.date_selected {
       position: absolute;
+      padding: 5px;
+
       font-size: 30px;
       color: white;
       font-family: "Lato";
       font-weight: 300;
-      padding: 5px;
-
+      
       left: 0px;
       right: 0px;
       bottom: 0px;
+    }
+
+    div.text_date{
+      font-size: 40px;
+      top: 30px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    div.case_text {
+      display: inline-block;
+      text-align: center;
+      padding: 30px 0;
+      top: 30px;
+      font-size: 45px;
     }
 
     div.select_wrapper {
@@ -141,7 +160,6 @@
       min-height: 75px;
     }
 
-
     svg.fill {
       width: 100%;
       height: 2000px;
@@ -150,8 +168,6 @@
       left: 0px;
       opacity: 0.9;
     }
-
-
 
     .stack-top {
       z-index: 9;
@@ -200,27 +216,28 @@
 
     <div class="date_wrapper stack-top " style="top:100px">
       <label class="date_selected stack-top">DATE</label>
-      <div class="date_selected" id="date_text" style="font-size: 27px;">-</div>
+      <div class="date_selected text_date" id="date_text">-</div>
     </div>
 
-    <div class="select_wrapper stack-top " style="top:205px">
+    <div class="select_wrapper stack-top " style="top:625px">
       <label class="date_selected stack-top">COUNTRY/REGION</label>
       <div class="date_selected" id="country_text" style="font-size: 27px;">-</div>
     </div>
 
-    <div class="select_wrapper stack-top " style="top:290px">
+    <div class="select_wrapper stack-top " style="top:710px">
       <label class="date_selected stack-top">PROVINCE/STATE</label>
       <div class="date_selected" id="province_text" style="font-size: 27px;">-</div>
     </div>
 
-    <div class="select_wrapper stack-top " style="top:385px">
-      <label class="date_selected stack-top">CASES</label>
-      <div class="date_selected" id="cases_text" style="font-size: 32px;">-</div>
+    <div class="select_wrapper stack-top "
+      style="left:980px; top:625px; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
+      <label class="date_selected stack-top">CONFIRMED CASES</label>
+      <div class="date_selected case_text" id="cases_text">-</div>
     </div>
 
     <div class="hidden" id="selected_index">-1</div>
 
-    <div class="title_text">COVID-19: CONFIRMED CASES</div>
+    <div class="title_text">CORONAVIRUS, COVID-19</div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -232,6 +249,7 @@
   <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
   <script src='js/dat.gui.min.js'></script> <!-- DAT GUI library -->
   <script src="js/d3.min.js"></script> <!-- D3 library -->
+
 
   <!-- BARCHARTS -->
   <script src="bar_chart.js"></script>
@@ -313,9 +331,9 @@
     //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
-    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
+    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
-    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
 
     globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
@@ -365,7 +383,7 @@
           bumpScale: 0.2,
           emissive: emission_color,
           emissiveMap: globe_sphere_emissive_tex,
-          emissiveIntensity: 0.1
+          emissiveIntensity: 0.0
         });
         globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
 
