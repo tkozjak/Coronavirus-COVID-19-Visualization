@@ -86,8 +86,8 @@
       position: absolute;
       left: 30px;
       right: 30px;
-      bottom: 5px;
-      top: 60px;
+      bottom: 44px;
+      top: 54px;*/
     }
 
     input.slider {
@@ -125,13 +125,13 @@
       color: white;
       font-family: "Lato";
       font-weight: 300;
-      
+
       left: 0px;
       right: 0px;
       bottom: 0px;
     }
 
-    div.text_date{
+    div.text_date {
       font-size: 40px;
       top: 30px;
       color: white;
@@ -193,11 +193,93 @@
       font-weight: 300;
     }
 
+    .country_label {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+    }
+
+    .province_label {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+    }
+
     .value_text {
-      font-size: 10px;
+      font-size: 12px;
       fill: black;
       font-family: "Lato";
       font-weight: 300;
+    }
+
+
+
+    /* SLIDER - remove track and thumb */
+    input[type=range] {
+      -webkit-appearance: none;
+      /* Hides the slider so that custom slider can be made */
+      width: 100%;
+      /* Specific width is required for Firefox. */
+      background: transparent;
+      /* Otherwise white in Chrome */
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+    }
+
+    input[type=range]:focus {
+      outline: none;
+      /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
+    }
+
+    input[type=range]::-ms-track {
+      width: 100%;
+      cursor: pointer;
+
+      /* Hides the slider so custom styles can be added */
+      background: transparent;
+      border-color: transparent;
+      color: transparent;
+    }
+
+    /* SLIDER - redesign thumb */
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      border: 1px solid #000000;
+      height: 36px;
+      width: 36px;
+      border-radius: 3px;
+      background: #ffffff;
+      cursor: pointer;
+      margin-top: -14px;
+      /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
+      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+      /* Add cool effects to your sliders! */
+    }
+
+    /* All the same stuff for Firefox */
+    input[type=range]::-moz-range-thumb {
+      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+      border: 1px solid #000000;
+      height: 36px;
+      width: 36px;
+      border-radius: 3px;
+      background: #ffffff;
+      cursor: pointer;
+    }
+
+    /* All the same stuff for IE */
+    input[type=range]::-ms-thumb {
+      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
+      border: 1px solid #000000;
+      height: 36px;
+      width: 36px;
+      border-radius: 3px;
+      background: #ffffff;
+      cursor: pointer;
     }
   </style>
 </head>
@@ -236,7 +318,7 @@
 
     <div class="hidden" id="selected_index">-1</div>
 
-    <div class="title_text">CORONAVIRUS  COVID-19</div>
+    <div class="title_text">Coronavirus COVID-19</div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -270,7 +352,7 @@
     var aspect = w / h;
     var camera = new THREE.PerspectiveCamera(75, aspect, 1, 2000);
     //camera.filmOffset = -20.0;
-    camera.setViewOffset( w, h, w * -0.15, h * 0.05, w, h );
+    camera.setViewOffset(w, h, w * -0.15, h * 0.05, w, h);
     camera.updateProjectionMatrix();
     camera.position.z = 20;
     camera.position.y = 5;
@@ -333,7 +415,8 @@
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
-    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day-gradient.jpg');
+    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
 
     globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
@@ -380,7 +463,7 @@
           specularMap: globe_sphere_spec_tex,
           specular: specular_color,
           bumpMap: globe_sphere_bump_tex,
-          bumpScale: 0.2,
+          bumpScale: 0.15,
           emissive: emission_color,
           emissiveMap: globe_sphere_emissive_tex,
           emissiveIntensity: 0.0
@@ -527,7 +610,7 @@
     // RAYCASTING EVENT HANDLER
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
-    raycaster.params.Points.threshold = 2.0;
+    raycaster.params.Points.threshold = 10.0;
 
     function raycast(event) {
       console.log("Mouse click event.");

@@ -23,6 +23,8 @@ var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/maste
 var all_bars;
 var all_labels;
 var all_values;
+var all_countries;
+var all_provinces;
 
 // COVID-19 dates
 var c19_dates = [];
@@ -32,13 +34,17 @@ var c19_number_of_places = -1;
 // sorted data (array of objects)
 var sorted_data;
 var data_set = false;
+var use_log = true;
 
 // SVG dimensions
-var label_margin = 200;
-var right_margin = 345;
-var bar_height = 20;
-var top_padding = 10;
-var bottom_padding = 30;
+var label_margin = 170;
+var right_margin = 375;
+var bar_height = 34;
+var top_padding = 0;
+var bottom_padding = 60;
+
+var country_font_size = 12;
+var province_font_size = 12;
 
 
 //RENDER COVID-19
@@ -50,49 +56,92 @@ renderCovidBars = data => {
 
   svg_height = svg.node().getBoundingClientRect().height;
 
-  //const xScale = d3.scaleLinear()
+  // logaritmic scale
   const xScale = d3.scaleLog()
     .base(Math.E)
     .clamp(true)
     .domain([0.1, max_value_selected_date])
     .range([0, right_margin]);
 
+  // linear scale
+  const xLinScale = d3.scaleLinear()
+    .domain([0, max_value_selected_date])
+    .range([0, right_margin]);
+
   const yScale = d3.scaleLinear()
     .domain([c19_number_of_places, 0])
-    .range([top_padding, svg_height-bottom_padding]);
+    .range([top_padding, svg_height - bottom_padding]);
 
-  console.log("Domain on xScale: " + xScale.domain());
-  console.log("Domain on yScale: " + yScale.domain());
+  //console.log("Domain on xScale: " + xScale.domain());
+  //console.log("Domain on yScale: " + yScale.domain());
 
   var bars;
-
-
 
   all_bars = svg.selectAll('rect')
     .data(data)
     .enter().append('rect')
     .attr('y', d => yScale(d[selected_date][1]))
     .attr('x', label_margin)
-    .attr('width', d => xScale(d[selected_date][0]))
+    .attr('width', function (d) {
+      if (use_log == true)
+        return xScale(d[selected_date][0]);
+      else
+        return xLinScale(d[selected_date][0]);
+    })
     .attr('height', bar_height - 2)
     .attr('fill', d => d.colour);
 
+  /*
+    all_labels = svg.selectAll('text.bar_label')
+      .data(data)
+      .enter().append('text')
+      .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 4)
+      .attr('class', 'bar_label')
+      .attr('x', label_margin - 2)
+      .attr('text-anchor', 'end')
+      .html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1]);
+  */
 
-  all_labels = svg.selectAll('text')
+
+
+  all_countries = svg.selectAll('text.country_label')
     .data(data)
     .enter().append('text')
-    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 4)
-    .attr('class', 'bar_label')
+    .attr('y', function (d) {
+      let offset = 0;
+      if (d["Province/State"] == "")
+        offset = bar_height - country_font_size;
+      else
+        offset = bar_height / 2 - 2;
+      return yScale(d[selected_date][1]) + offset;
+    })
+    .attr('class', 'country_label')
     .attr('x', label_margin - 2)
     .attr('text-anchor', 'end')
-    .html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1]);
+    .html(d => (d["Country/Region"] /*+ d[selected_date][1]*/));
+
+
+  all_provinces = svg.selectAll('text.province_label')
+    .data(data)
+    .enter().append('text')
+    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + province_font_size)
+    .attr('class', 'province_label')
+    .attr('x', label_margin - 2)
+    .attr('text-anchor', 'end')
+    .html(d => (d["Province/State"] == "" ? "" : d["Province/State"]));
 
 
   all_values = svg.selectAll('text.value_text')
     .data(data)
     .enter().append('text')
-    .attr('x', d => (xScale(d[selected_date][0])) + label_margin + 2)
-    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 4)
+    //.attr('x', d => (xScale(d[selected_date][0])) + label_margin + 2)
+    .attr('x', function (d) {
+      if (use_log == true)
+        return xScale(d[selected_date][0]) + label_margin + 2;
+      else
+        return xLinScale(d[selected_date][0]) + label_margin + 2;
+    })
+    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 6)
     .attr('class', 'bar_label')
     .html(d => d[selected_date][0]);
 
@@ -181,17 +230,43 @@ d3.csv(covid_url).then(function (data) {
 
     // recalculate x axis data to pixel mapping
     //const xScale = d3.scaleLinear().domain([0, max_value_selected_date]).range([00, 750]);
+    //const xScale = d3.scaleLog()
+    // .clamp(true)
+    //.domain([0.1, max_value_selected_date]).range([0, right_margin]);
+
     const xScale = d3.scaleLog()
+      .base(Math.E)
       .clamp(true)
-      .domain([0.1, max_value_selected_date]).range([0, right_margin]);
+      .domain([0.1, max_value_selected_date])
+      .range([0, right_margin]);
 
-    const yScale = d3.scaleLinear().domain([c19_number_of_places, 0]).range([top_padding, svg_height-bottom_padding]);
+    const xLinScale = d3.scaleLinear()
+      .domain([0, max_value_selected_date])
+      .range([0, right_margin]);
 
-    all_bars.transition().ease(d3.easeLinear).duration(1000).attr('width', d => xScale(Number(d[selected_date][0])))
+    const yScale = d3.scaleLinear()
+      .domain([c19_number_of_places, 0])
+      .range([top_padding, svg_height - bottom_padding]);
+
+    all_bars.transition().ease(d3.easeLinear).duration(1000)
+      .attr('width', function (d) {
+        if (use_log == true)
+          return xScale(d[selected_date][0]);
+        else
+          return xLinScale(d[selected_date][0]);
+      })
       .attr('y', d => yScale(d[selected_date][1]))
 
-    all_labels.html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1])
-      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4));
+    /*
+        all_labels.html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1])
+          .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4));
+    */
+
+    all_countries.html(d => d["Country/Region"]/* + d[selected_date][1]*/)
+      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 - 2));
+
+    all_provinces.html(d => d["Province/State"] == " ... " ? d["Country/Region"] : d["Province/State"])
+      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size + 2));
 
     all_values.html(d => d[selected_date][0]).transition().ease(d3.easeLinear).duration(1000)
       .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
@@ -205,18 +280,18 @@ d3.csv(covid_url).then(function (data) {
   var selected_observer = new MutationObserver(function () {
     changeConfirmedCases();
   });
-  selected_observer.observe( observe_selected_index, {subtree: true, childList: true} );
+  selected_observer.observe(observe_selected_index, { subtree: true, childList: true });
 
   var observe_selected_date = document.querySelector("#date_text");
   var date_observer = new MutationObserver(function () {
     changeConfirmedCases();
   });
-  selected_observer.observe( observe_selected_date, {subtree: true, childList: true} );
+  selected_observer.observe(observe_selected_date, { subtree: true, childList: true });
 
-  function changeConfirmedCases(){
+  function changeConfirmedCases() {
     let selected_index = Number(d3.select("#selected_index").html());
     let selected_date = d3.select("#date_text").html();
-    if(Number(selected_index) != -1){
+    if (Number(selected_index) != -1) {
       let selected_cases = sorted_data[selected_index][selected_date];
       d3.select("#cases_text").html(String(selected_cases[0]));
     }
