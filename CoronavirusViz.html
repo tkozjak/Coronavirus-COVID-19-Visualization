@@ -6,7 +6,7 @@
   <meta content="utf-8" http-equiv="encoding">
   <title>COVID-19</title>
 
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Lato" />
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato" />
 
   <style>
     * {
@@ -87,7 +87,7 @@
       left: 30px;
       right: 30px;
       bottom: 44px;
-      top: 54px;*/
+      top: 54px;
     }
 
     input.slider {
@@ -532,8 +532,8 @@
         let color = colorScale_2(confirmed_value);
         console.log(color);
 
-        data_point = new THREE.CylinderGeometry(0.03, 0.03, 1, 8);
-        data_mat = new THREE.MeshBasicMaterial();
+        data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 8);
+        data_mat = new THREE.MeshPhongMaterial();
         data_mat.color = new THREE.Color(color);
         var data_point_obj = new THREE.Mesh(data_point, data_mat);
         data_point_obj.rotation.z = THREE.Math.degToRad(90);
