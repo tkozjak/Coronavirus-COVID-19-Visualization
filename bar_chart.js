@@ -11,15 +11,38 @@ var svg_div = d3.select("#side_box_div");
 console.log("SVG. Width: " + svg_width);
 console.log("SVG. Width: " + svg_height);
 
-// MY REPO
+// MY REPO (FALLBACK)
 //confiremd
-//https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv
+var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/data/time_series_19-covid-Confirmed.csv";
 
 // JOHNS HOPKINS REPO
 // confirmed
 var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 // dead
 //var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+
+
+var url = CheckUrl(covid_url);
+if (url == true) {
+  //url exists    
+}
+else {
+  //url not exists
+  console.log("file does not exist!")
+  covid_url = fallback_url;
+}
+
+function CheckUrl(url) {
+  if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
+    var http = new XMLHttpRequest();
+  }
+  else {// code for IE6, IE5
+    var http = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+  http.open('HEAD', url, false);
+  http.send();
+  return http.status != 404;
+}
 
 
 // D3 elements
@@ -44,7 +67,7 @@ var use_log = true;
 // SVG dimensions
 var label_margin = 170;
 var right_margin = 375;
-var bar_height = 34;
+var bar_height = 36;
 var top_padding = 0;
 var bottom_padding = 60;
 
@@ -96,26 +119,15 @@ renderCovidBars = data => {
     .attr('height', bar_height - 2)
     .attr('fill', d => d.colour);
 
-  /*
-    all_labels = svg.selectAll('text.bar_label')
-      .data(data)
-      .enter().append('text')
-      .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 4)
-      .attr('class', 'bar_label')
-      .attr('x', label_margin - 2)
-      .attr('text-anchor', 'end')
-      .html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1]);
-  */
-
   all_countries = svg.selectAll('text.country_label')
     .data(data)
     .enter().append('text')
     .attr('y', function (d) {
       let offset = 0;
       if (d["Province/State"] == "")
-        offset = bar_height - country_font_size;
+        offset = bar_height - country_font_size - 3;
       else
-        offset = bar_height / 2 - 3;
+        offset = bar_height / 2 - 4;
       return yScale(d[selected_date][1]) + offset;
     })
     .attr('class', 'country_label')
@@ -146,7 +158,14 @@ renderCovidBars = data => {
     .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 6)
     .attr('class', 'bar_label')
     .attr('text-anchor', 'end')
-    .html(d => d[selected_date][0]);
+    //.html(d => d[selected_date][0]);
+    .html(function (d) {
+      let c_value = d[selected_date][0];
+      if (c_value == 0)
+        return "";
+      else
+        return c_value;
+    })
 
   return bars;
 }
@@ -207,12 +226,12 @@ d3.csv(covid_url).then(function (data) {
 
     //total cases
     let total_cases = 0;
-    sorted_data.forEach( (d, i) => ( total_cases += d[date_key][0] ) );
+    sorted_data.forEach((d, i) => (total_cases += d[date_key][0]));
     c19_total_cases[i] = total_cases;
 
     //console.log("COVID-19. Ranked data item " + i + ", " + date_key + "  : ");
     //console.log(data[i]);
-    console.log( "Total cases on " + date_key +" : "+c19_total_cases[i]);
+    console.log("Total cases on " + date_key + " : " + c19_total_cases[i]);
   }
 
 
@@ -231,13 +250,13 @@ d3.csv(covid_url).then(function (data) {
   // INITIAL RENDER
   renderCovidBars(sorted_data);
 
-  
+
 
 
 
   // CHANGE THE DATE - dapending on the slider value
   function changeDate(index) {
-    
+
     // change total cases
     d3.select("#total_cases_text").html(c19_total_cases[index]);
 
@@ -251,12 +270,6 @@ d3.csv(covid_url).then(function (data) {
     SCENE_3D_updateDataPoints(sorted_data, selected_date);
 
     let max_value_selected_date = d3.max(data, d => Number(d[selected_date][0]))
-
-    // recalculate x axis data to pixel mapping
-    //const xScale = d3.scaleLinear().domain([0, max_value_selected_date]).range([00, 750]);
-    //const xScale = d3.scaleLog()
-    // .clamp(true)
-    //.domain([0.1, max_value_selected_date]).range([0, right_margin]);
 
     const xScale = d3.scaleLog()
       .base(Math.E)
@@ -281,18 +294,28 @@ d3.csv(covid_url).then(function (data) {
       })
       .attr('y', d => yScale(d[selected_date][1]))
 
-    /*
-        all_labels.html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1])
-          .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4));
-    */
-
     all_countries.html(d => d["Country/Region"]/* + d[selected_date][1]*/)
-      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 - 3));
+      .transition().ease(d3.easeLinear).duration(1000)
+      .attr('y', function (d) {
+        let offset = 0;
+        if (d["Province/State"] == "")
+          offset = bar_height - country_font_size - 3;
+        else
+          offset = bar_height / 2 - 4;
+        return yScale(d[selected_date][1]) + offset;
+      })
 
     all_provinces.html(d => d["Province/State"] == " ... " ? d["Country/Region"] : d["Province/State"])
       .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size));
 
-    all_values.html(d => d[selected_date][0]).transition().ease(d3.easeLinear).duration(1000)
+    all_values.html(function (d) {
+      let c_value = d[selected_date][0];
+      if (c_value === 0)
+        return "";
+      else
+        return c_value;
+    })
+      .transition().ease(d3.easeLinear).duration(1000)
       .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
       .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
 
@@ -333,5 +356,4 @@ d3.csv(covid_url).then(function (data) {
       selectedValue = this.value
       changeDate(selectedValue)
     })
-
 });

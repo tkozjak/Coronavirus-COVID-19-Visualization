@@ -76,9 +76,9 @@
       scrollbar-width: none;*/
     }
 
-   /* div.side_box::-webkit-scrollbar {*/
-      /* display: none;*/
-      /* Safari and Chrome */
+    /* div.side_box::-webkit-scrollbar {*/
+    /* display: none;*/
+    /* Safari and Chrome */
     /*}*/
 
     div.slider_box {
@@ -88,8 +88,8 @@
       left: 620px;
       right: 10px;
       bottom: 5px;
-      height: 70px;
-      min-height: 70px;
+      height: 90px;
+      min-height: 90px;
       padding: 20px;
     }
 
@@ -97,7 +97,7 @@
       position: absolute;
       left: 30px;
       right: 30px;
-      bottom: 25px;
+      bottom: 50px;
       top: 40px;
       border-color: rgb(94, 50, 34);
       border-width: 1px;
@@ -322,6 +322,33 @@
       background: #ffffff;
       cursor: pointer;
     }
+
+    a:link {
+      color: rgb(200, 255, 0);
+      background-color: transparent;
+      text-decoration: none;
+    }
+
+    a:visited {
+      color: rgb(200, 255, 0);
+      ;
+      background-color: transparent;
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: rgb(200, 255, 0);
+      ;
+      background-color: transparent;
+      text-decoration: underline;
+    }
+
+    a:active {
+      color: rgb(200, 255, 0);
+      ;
+      background-color: transparent;
+      text-decoration: underline;
+    }
   </style>
 </head>
 
@@ -338,31 +365,41 @@
       <div class="slider_center stack-top fill_2">
         <input class="slider stack-top" type="range" name="mySlider" id="mySlider" min="0" max="30" value="0">
       </div>
+      <div id="license_text" class="slider_text_date slider_start_date stack-top"
+        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">This app
+        was created by Oraclum Intelligence Systems for educational,
+        non-commercial purposes.
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;" alt="Creative Commons License"
+            style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
+        licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
+          Attribution-NonCommercial 4.0 International License</a>
+      </div>
     </div>
+      
 
     <div class="date_wrapper stack-top fill_2" style="top:10px">
       <label class="date_selected stack-top">DATE</label>
       <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
 
-    <div class="select_wrapper stack-top fill_2" style="bottom:210px; top:auto;">
+    <div class="select_wrapper stack-top fill_2" style="bottom:230px; top:auto;">
       <label class="date_selected stack-top">COUNTRY/REGION</label>
       <div class="date_selected fill_1" id="country_text" style="top: 30px; font-size: 25px;"> select </div>
     </div>
 
-    <div class="select_wrapper stack-top fill_2" style="bottom:125px; top:auto;">
+    <div class="select_wrapper stack-top fill_2" style="bottom:145px; top:auto;">
       <label class="date_selected stack-top">PROVINCE/STATE</label>
       <div class="date_selected fill_1" id="province_text" style="top: 30px; font-size: 25px;"> select </div>
     </div>
 
     <div class="select_wrapper stack-top fill_2"
-      style="left:980px; bottom:125px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
+      style="left:980px; bottom:145px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
       <label class="date_selected stack-top">CONFIRMED CASES</label>
       <div class="date_selected case_text fill_1" id="cases_text"> select </div>
     </div>
 
     <div class="select_wrapper stack-top fill_2"
-      style="left:auto; right:10px; bottom:125px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
+      style="left:auto; right:10px; bottom:145px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
       <label class="date_selected stack-top">TOTAL CONFIRMED CASES</label>
       <div class="date_selected case_text fill_1" id="total_cases_text"> - </div>
     </div>
@@ -387,6 +424,8 @@
   <script src="bar_chart.js"></script>
 
   <script>
+    // replace console outputs w empty function
+    console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
