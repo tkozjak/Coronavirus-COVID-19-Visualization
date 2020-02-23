@@ -1,6 +1,6 @@
 
 // SELECT SVG ELEMENT
-var svg = d3.select("#bar_chart_container").style("background-color", "#330000");
+var svg = d3.select("#bar_chart_container");
 var svg_width = svg.node().getBoundingClientRect().width;
 var svg_height = svg.node().getBoundingClientRect().height;
 
@@ -11,11 +11,14 @@ var svg_div = d3.select("#side_box_div");
 console.log("SVG. Width: " + svg_width);
 console.log("SVG. Width: " + svg_height);
 
-//my repo
+// MY REPO
+//confiremd
 //https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv
 
-// not my repo
+// JOHNS HOPKINS REPO
+// confirmed
 var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+// dead
 //var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 
 
@@ -26,15 +29,17 @@ var all_values;
 var all_countries;
 var all_provinces;
 
-// COVID-19 dates
+// COVID-19 DATA
 var c19_dates = [];
 var c19_number_of_dates = -1;
 var c19_number_of_places = -1;
+var c19_total_cases = [];
 
-// sorted data (array of objects)
+// D3 DATA OBJECT (array of objects)
 var sorted_data;
 var data_set = false;
 var use_log = true;
+
 
 // SVG dimensions
 var label_margin = 170;
@@ -102,8 +107,6 @@ renderCovidBars = data => {
       .html(d => (d["Province/State"] == "" ? d["Country/Region"] : d["Province/State"]) + ":" + d["Country/Region"] + " " + d[selected_date][1]);
   */
 
-
-
   all_countries = svg.selectAll('text.country_label')
     .data(data)
     .enter().append('text')
@@ -112,7 +115,7 @@ renderCovidBars = data => {
       if (d["Province/State"] == "")
         offset = bar_height - country_font_size;
       else
-        offset = bar_height / 2 - 2;
+        offset = bar_height / 2 - 3;
       return yScale(d[selected_date][1]) + offset;
     })
     .attr('class', 'country_label')
@@ -134,15 +137,15 @@ renderCovidBars = data => {
   all_values = svg.selectAll('text.value_text')
     .data(data)
     .enter().append('text')
-    //.attr('x', d => (xScale(d[selected_date][0])) + label_margin + 2)
     .attr('x', function (d) {
       if (use_log == true)
-        return xScale(d[selected_date][0]) + label_margin + 2;
+        return xScale(d[selected_date][0]) + label_margin - 2;
       else
-        return xLinScale(d[selected_date][0]) + label_margin + 2;
+        return xLinScale(d[selected_date][0]) + label_margin - 2;
     })
     .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 6)
     .attr('class', 'bar_label')
+    .attr('text-anchor', 'end')
     .html(d => d[selected_date][0]);
 
   return bars;
@@ -190,6 +193,7 @@ d3.csv(covid_url).then(function (data) {
   // iterate over each recorded date
   // sort data items based on the value in the date column
   // assign the rank to each value
+  // calculate total cases for that date
   for (var i = 0; i < c19_number_of_dates; i++) {
 
     let date_key = c19_dates[i];
@@ -201,21 +205,41 @@ d3.csv(covid_url).then(function (data) {
 
     sorted_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
 
+    //total cases
+    let total_cases = 0;
+    sorted_data.forEach( (d, i) => ( total_cases += d[date_key][0] ) );
+    c19_total_cases[i] = total_cases;
+
     //console.log("COVID-19. Ranked data item " + i + ", " + date_key + "  : ");
     //console.log(data[i]);
-
+    console.log( "Total cases on " + date_key +" : "+c19_total_cases[i]);
   }
+
+
+  // INITIALIZE
 
   data_set = true;
   d3.select("#date_text").html(c19_dates[0]);
   // CREATE 3D SCENE DATA OBJECTS
   SCENE_3D_addDataPoints(sorted_data, c19_dates[0]);
 
+  //SET START and END DATE
+  d3.select("#SStartDate").html("Start date: " + c19_dates[0]);
+  d3.select("#SEndDate").html("End date: " + c19_dates[c19_dates.length - 1]);
+  d3.select("#total_cases_text").html(c19_total_cases[0]);
+
   // INITIAL RENDER
   renderCovidBars(sorted_data);
 
+  
+
+
+
   // CHANGE THE DATE - dapending on the slider value
   function changeDate(index) {
+    
+    // change total cases
+    d3.select("#total_cases_text").html(c19_total_cases[index]);
 
     let selected_date = c19_dates[index];
     svg_height = svg.node().getBoundingClientRect().height;
@@ -263,14 +287,14 @@ d3.csv(covid_url).then(function (data) {
     */
 
     all_countries.html(d => d["Country/Region"]/* + d[selected_date][1]*/)
-      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 - 2));
+      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 - 3));
 
     all_provinces.html(d => d["Province/State"] == " ... " ? d["Country/Region"] : d["Province/State"])
-      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size + 2));
+      .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size));
 
     all_values.html(d => d[selected_date][0]).transition().ease(d3.easeLinear).duration(1000)
       .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
-      .attr('x', d => (xScale(d[selected_date][0])) + label_margin + 2);
+      .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
 
   }
 
@@ -288,12 +312,15 @@ d3.csv(covid_url).then(function (data) {
   });
   selected_observer.observe(observe_selected_date, { subtree: true, childList: true });
 
+
   function changeConfirmedCases() {
     let selected_index = Number(d3.select("#selected_index").html());
     let selected_date = d3.select("#date_text").html();
     if (Number(selected_index) != -1) {
       let selected_cases = sorted_data[selected_index][selected_date];
       d3.select("#cases_text").html(String(selected_cases[0]));
+
+      SCENE_3D_UPDATE_SELECTION_RING(sorted_data, selected_index)
     }
   }
 

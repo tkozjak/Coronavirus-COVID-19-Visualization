@@ -25,9 +25,20 @@
     div {
       border-color: coral;
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
+    }
+
+    div.fill_1 {
+      background-color: rgb(41, 12, 14);
+      opacity: 0.9;
+    }
+
+    div.fill_2 {
+      background-color: rgb(70, 49, 12);
+      /*background-color: rgb(68, 32, 25);*/
+      opacity: 0.9;
     }
 
     div.rounded_bckg {
@@ -60,13 +71,13 @@
       min-width: 600px;
       padding: 0px;
       overflow: auto;
-
+      /*
       -ms-overflow-style: none;
-      scrollbar-width: none;
+      scrollbar-width: none;*/
     }
 
     div.side_box::-webkit-scrollbar {
-      display: none;
+      /* display: none;*/
       /* Safari and Chrome */
     }
 
@@ -77,8 +88,8 @@
       left: 620px;
       right: 10px;
       bottom: 5px;
-      height: 100px;
-      min-height: 100px;
+      height: 70px;
+      min-height: 70px;
       padding: 20px;
     }
 
@@ -86,8 +97,10 @@
       position: absolute;
       left: 30px;
       right: 30px;
-      bottom: 44px;
-      top: 54px;
+      bottom: 25px;
+      top: 40px;
+      border-color: rgb(94, 50, 34);
+      border-width: 1px;
     }
 
     input.slider {
@@ -96,16 +109,37 @@
       height: 100%;
     }
 
+    div.slider_text_date {
+      font-size: 20px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 100;
+    }
+
+    div.slider_start_date {
+      position: absolute;
+      left: 30px;
+      top: 10px;
+      text-align: left;
+    }
+
+    div.slider_end_date {
+      position: absolute;
+      right: 30px;
+      top: 10px;
+      text-align: right;
+    }
+
 
     div.date_wrapper {
       position: absolute;
 
       left: 620px;
-      width: 200px;
-      min-width: 200px;
-      height: 125px;
-      min-height: 125px;
-      top: 100px;
+      width: 250px;
+      min-width: 250px;
+      height: 150px;
+      min-height: 150px;
+      top: 10px;
     }
 
     label.date_selected {
@@ -115,6 +149,8 @@
       font-family: "Lato";
       font-weight: 300;
       padding: 5px;
+
+
     }
 
     div.date_selected {
@@ -125,6 +161,8 @@
       color: white;
       font-family: "Lato";
       font-weight: 300;
+
+      white-space: nowrap;
 
       left: 0px;
       right: 0px;
@@ -138,7 +176,7 @@
       font-family: "Lato";
       font-weight: 300;
       text-align: center;
-      padding: 20px 0;
+      padding: 30px 0;
     }
 
     div.case_text {
@@ -180,17 +218,20 @@
       font-weight: 300;
       padding: 5px;
 
-      right: 5px;
-      min-width: 1000px;
+      text-align: center;
+
+      /*right: 5px;*/
+      min-width: 590px;
+      min-height: 75px;
       top: 10px;
       left: 5px;
     }
 
     .bar_label {
-      font-size: 10px;
-      fill: white;
+      font-size: 14px;
+      fill: rgb(41, 7, 7);
       font-family: "Lato";
-      font-weight: 300;
+      font-weight: 800;
     }
 
     .country_label {
@@ -286,39 +327,49 @@
 
 <body>
   <div id="main_container" class="wrapper">
-    <div class="side_box stack-top " id="side_box_div">
-      <svg class="fill stack-top" style="background: white" id="bar_chart_container"></svg>
+    <div class="side_box stack-top fill_1" id="side_box_div">
+      <svg class="fill stack-top" id="bar_chart_container"></svg>
     </div>
-    <div class="slider_box stack-top ">
-      <div class="slider_center stack-top">
+
+    <!-- SLIDER -->
+    <div class="slider_box stack-top fill_1">
+      <div class="slider_text_date slider_start_date stack-top" id="SStartDate">Start date</div>
+      <div class="slider_text_date slider_end_date stack-top" id="SEndDate">End date</div>
+      <div class="slider_center stack-top fill_2">
         <input class="slider stack-top" type="range" name="mySlider" id="mySlider" min="0" max="30" value="0">
       </div>
     </div>
 
-    <div class="date_wrapper stack-top " style="top:100px">
+    <div class="date_wrapper stack-top fill_2" style="top:10px">
       <label class="date_selected stack-top">DATE</label>
-      <div class="date_selected text_date" id="date_text">-</div>
+      <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
 
-    <div class="select_wrapper stack-top " style="top:625px">
+    <div class="select_wrapper stack-top fill_2" style="bottom:210px; top:auto;">
       <label class="date_selected stack-top">COUNTRY/REGION</label>
-      <div class="date_selected" id="country_text" style="font-size: 27px;">-</div>
+      <div class="date_selected fill_1" id="country_text" style="top: 30px; font-size: 25px;"> select </div>
     </div>
 
-    <div class="select_wrapper stack-top " style="top:710px">
+    <div class="select_wrapper stack-top fill_2" style="bottom:125px; top:auto;">
       <label class="date_selected stack-top">PROVINCE/STATE</label>
-      <div class="date_selected" id="province_text" style="font-size: 27px;">-</div>
+      <div class="date_selected fill_1" id="province_text" style="top: 30px; font-size: 25px;"> select </div>
     </div>
 
-    <div class="select_wrapper stack-top "
-      style="left:980px; top:625px; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
+    <div class="select_wrapper stack-top fill_2"
+      style="left:980px; bottom:125px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
       <label class="date_selected stack-top">CONFIRMED CASES</label>
-      <div class="date_selected case_text" id="cases_text">-</div>
+      <div class="date_selected case_text fill_1" id="cases_text"> select </div>
+    </div>
+
+    <div class="select_wrapper stack-top fill_2"
+      style="left:auto; right:10px; bottom:125px; top:auto; height: 160px; min-height: 160px; width: 210px; min-width: 210px;">
+      <label class="date_selected stack-top">TOTAL CONFIRMED CASES</label>
+      <div class="date_selected case_text fill_1" id="total_cases_text"> - </div>
     </div>
 
     <div class="hidden" id="selected_index">-1</div>
 
-    <div class="title_text">Coronavirus COVID-19</div>
+    <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -350,12 +401,13 @@
     // var camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.0001, 20000);
     // CAMERA
     var aspect = w / h;
-    var camera = new THREE.PerspectiveCamera(75, aspect, 1, 2000);
+    var camera = new THREE.PerspectiveCamera(65, aspect, 1, 2000);
     //camera.filmOffset = -20.0;
     camera.setViewOffset(w, h, w * -0.15, h * 0.05, w, h);
     camera.updateProjectionMatrix();
-    camera.position.z = 20;
-    camera.position.y = 5;
+    camera.position.x = -5;
+    camera.position.z = -20;
+    camera.position.y = 10;
 
     // RENDERER
     var renderer = new THREE.WebGLRenderer({ antialias: true, canvas: renderCanvas });
@@ -392,8 +444,13 @@
     //***************************************************************************************
 
     // HELPER GRID
-    var helper = new THREE.GridHelper(1000, 40, 0x303030, 0x303030);
-    helper.position.y = 0;
+    //var helper = new THREE.GridHelper(1000, 40, 0x303030, 0x303030);
+    //helper.position.y = 0;
+    //scene.add(helper);
+
+    var helper = new THREE.PolarGridHelper(50, 8, 8, 128);
+    helper.material.opacity = 0.2;
+    helper.material.transparent = true;
     scene.add(helper);
 
     // GLOBE
@@ -412,12 +469,8 @@
     var gl = document.getElementById("renderCanvas").getContext("experimental-webgl");
     //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
-    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://mattloftus.github.io/images/earth_3.jpg');
-    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day.jpg');
-    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
-    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day-gradient.jpg');
-    //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-index-shifted-gray.png');
 
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day-gradient.jpg');
     globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
     globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_diff_tex.generateMipmaps = false;
@@ -486,7 +539,7 @@
         }
 
         callback();
-      }, 1000);
+      }, 0);
     }
 
     // SPHERE CALLBACK FUNCTION
@@ -530,7 +583,7 @@
         var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
 
         let color = colorScale_2(confirmed_value);
-        console.log(color);
+        //console.log(color);
 
         data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 8);
         data_mat = new THREE.MeshPhongMaterial();
@@ -553,7 +606,32 @@
       });
     }
 
+    // add select ring
+    // rotation object
+    var ring_position = new THREE.Vector3(radius, 0, 0);
+    var sel_ring_rotation = new THREE.Object3D;
+    sel_ring_rotation.rotation.z = THREE.Math.degToRad(0);
+    sel_ring_rotation.rotation.y = THREE.Math.degToRad(0);
+    scene.add(sel_ring_rotation);
+    var sel_ring_geo = new THREE.RingGeometry(0.10, 0.14, 32);
+    var sel_ring_mat = new THREE.MeshBasicMaterial();
+    var sel_ring_obj = new THREE.Mesh(sel_ring_geo, sel_ring_mat);
+    sel_ring_obj.rotation.y = THREE.Math.degToRad(90);
+    sel_ring_obj.position.copy(ring_position);
+    sel_ring_obj.updateMatrix();
+    sel_ring_obj.visible = false;
+    sel_ring_rotation.add(sel_ring_obj);
 
+    function SCENE_3D_UPDATE_SELECTION_RING(sorted_data, index) {
+      sel_ring_obj.visible = true;
+      let selected_Lat = sorted_data[index]["Lat"];
+      let selected_Long = sorted_data[index]["Long"];
+      sel_ring_rotation.rotation.z = THREE.Math.degToRad(selected_Lat);
+      sel_ring_rotation.rotation.y = THREE.Math.degToRad(selected_Long);
+      sel_ring_rotation.updateMatrix();
+      console.log("Selected Lat: " + selected_Lat);
+      console.log("Selected Long: " + selected_Long);
+    }
 
     function SCENE_3D_updateDataPoints(sorted_data, key) {
       data_points_pos_array.forEach((d, i) => {
@@ -636,7 +714,6 @@
         d3.select("#province_text").html(name[1]);
         d3.select("#selected_index").html(name[2]);
       }
-
     }
 
     function onDocumentTouchEnd(event) {
