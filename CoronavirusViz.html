@@ -30,6 +30,15 @@
       padding: 0px;
     }
 
+    label{
+      border-color: rgb(229, 255, 0);
+      border-style: solid;
+      border-width: 1px;
+      margin: 0px;
+      padding: 0px;
+
+    }
+
     div.fill_1 {
       background-color: rgb(41, 12, 14);
       opacity: 0.9;
@@ -47,8 +56,8 @@
       left: 620px;
       right: 10px;
       bottom: 350px;
-      height: 150px;
-      min-height: 150px;
+      height: 250px;
+      min-height: 250px;
     }
 
     div.info-box-big {
@@ -66,7 +75,7 @@
       left: 185px;
       top: 0px;
       height: calc(50% - 5px);
-      width: 150px;
+      width: 350px;
       min-width: 150px;
     }
 
@@ -109,6 +118,16 @@
       bottom: 0px;
       width: 100%;
       font-size: 20px;
+    }
+
+    div.mid-text{
+      position: absolute;
+      left: auto;
+      right: auto;
+      top: 50%;
+      bottom: auto;
+      /*margin: 10px;*/
+      transform: translate(10%,-50%);
     }
 
 
@@ -485,11 +504,11 @@
 
       <div class="info-box-mid stack-top">
         <label class="info-box stack-top">COUNTRY / REGION</label>
-        <div class="ib-mid-text stack-top"><div style="padding:10px;">number</div></div>
+        <div class="ib-mid-text stack-top"><div class="mid-text">number</div></div>
       </div>
       <div class="info-box-mid stack-top"  style="top:auto; bottom:0px;">
         <label class="info-box stack-top">PROVINCE / STATE</label>
-        <div class="ib-mid-text stack-top"><div style="padding:10px;">number</div></div>
+        <div class="ib-mid-text stack-top"><div class="mid-text">number</div></div>
       </div>
     </div>
 
