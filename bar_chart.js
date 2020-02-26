@@ -1,4 +1,13 @@
 
+// CREATE CALENDAR ELEMENTS
+var cal_svg = d3.select("#calendar-svg");
+rec_days = cal_svg.append('rect')
+.attr('y', 0)
+.attr('x', 0)
+.attr('height', 100)
+.attr('width', 100)
+.attr('fill', "red");
+
 // SELECT SVG ELEMENT
 var svg = d3.select("#bar_chart_container");
 var svg_width = svg.node().getBoundingClientRect().width;
@@ -57,6 +66,10 @@ var c19_dates = [];
 var c19_number_of_dates = -1;
 var c19_number_of_places = -1;
 var c19_total_cases = [];
+
+var year = -1;
+var month = -1;
+var date_objects = [];
 
 // D3 DATA OBJECT (array of objects)
 var sorted_data;
