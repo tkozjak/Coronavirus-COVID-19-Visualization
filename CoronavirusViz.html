@@ -25,7 +25,7 @@
     div {
       border-color: coral;
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
     }
@@ -33,7 +33,16 @@
     label {
       border-color: rgb(229, 255, 0);
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
+      margin: 0px;
+      padding: 0px;
+
+    }
+
+    svg {
+      border-color: rgb(0, 255, 64);
+      border-style: solid;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
 
@@ -57,9 +66,11 @@
       font-weight: 300;
       white-space: nowrap;
     }
+
     div.font_1 {
       font-size: 30px;
     }
+
     div.font_2 {
       font-size: 20px;
     }
@@ -129,15 +140,24 @@
       transform: translate(0%, -50%);
     }
 
-    div.calendar-wrapper{
+    div.calendar-wrapper {
       position: absolute;
       left: 30px;
       right: 30px;
       bottom: 450px;
-      height: 80px;
+      height: 120px;
+
+      overflow: auto;
       /*
       border-color: rgb(94, 50, 34);
       border-width: 1px;*/
+    }
+
+    rect.cal-day {
+      fill: rgb(41, 12, 14);
+      opacity: 0.9;
+      stroke-width: 2px;
+      stroke: rgb(70, 49, 12);
     }
 
 
@@ -291,7 +311,7 @@
     svg.fill {
       width: 100%;
       height: 2000px;
-      position: relative;
+      /*position: relative;*/
       top: 0px;
       left: 0px;
       opacity: 0.9;
@@ -337,7 +357,9 @@
       fill: white;
       font-family: "Lato";
       font-weight: 300;
+      pointer-events: none;
     }
+    
 
     .value_text {
       font-size: 12px;
@@ -532,7 +554,7 @@
 
   <script>
     // replace console outputs w empty function
-    console.log = function () { };
+    //console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
