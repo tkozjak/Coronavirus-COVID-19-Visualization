@@ -359,7 +359,7 @@
       font-weight: 300;
       pointer-events: none;
     }
-    
+
 
     .value_text {
       font-size: 12px;
@@ -914,6 +914,14 @@
 
     // CALL RENDER
     render();
+
+    // arrow keys even listener
+    document.addEventListener('keydown', logKey);
+    function logKey(e) {
+      console.log(e.code);
+    }
+
+    testFunction();
 
   </script>
 </body>

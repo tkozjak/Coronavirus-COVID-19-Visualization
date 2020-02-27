@@ -5,9 +5,9 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 
 // JOHNS HOPKINS REPO
 // confirmed
-var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 // dead
-//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 
 
 var url = CheckUrl(covid_url);
@@ -453,4 +453,16 @@ function changeDate(data, index) {
     .transition().ease(d3.easeLinear).duration(1000)
     .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
     .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
+}
+
+function testFunction(){
+  console.log( "TEST CALLED" );
+}
+
+function eventDISPATCH( date, index ){
+
+}
+
+function selectCalendarDate( date ){
+
 }
