@@ -5,9 +5,9 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 
 // JOHNS HOPKINS REPO
 // confirmed
-//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 // dead
-var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 
 
 var url = CheckUrl(covid_url);
@@ -44,8 +44,9 @@ var svg_div = d3.select("#side_box_div");
 console.log("SVG. Width: " + svg_width);
 console.log("SVG. Width: " + svg_height);
 
-// SELECT SVG EL. THAT HOLDS CALENDAR LEMENTS
+// CALENDAR SVG ELEMENTS
 var cal_svg = d3.select("#calendar-svg");
+var selected_date_marker;
 
 
 // D3 elements
@@ -150,61 +151,31 @@ d3.csv(covid_url).then(function (data) {
   }
 
 
-  // INITIALIZE TO DAY ONE
+  // INITIALIZE DATE and TOTAL CASES TO DAY ONE
   data_set = true;
   d3.select("#date_text").html(c19_dates[0]);
+  d3.select("#total_cases_text").html(c19_total_cases[0]);
 
   // CREATE 3D SCENE DATA OBJECTS
   SCENE_3D_addDataPoints(sorted_data, c19_dates[0]);
 
-  // SET START and END DATE
-  d3.select("#SStartDate").html("Start date: " + c19_dates[0]);
-  d3.select("#SEndDate").html("End date: " + c19_dates[c19_dates.length - 1]);
-  d3.select("#total_cases_text").html(c19_total_cases[0]);
 
-
-  // OBSERVE SELECTED INDEX and DATE and CHANGE NUMBER OF CASES
-  var observe_selected_index = document.querySelector("#selected_index");
-  var selected_observer = new MutationObserver(function () {
-    changeConfirmedCases();
-  });
-  selected_observer.observe(observe_selected_index, { subtree: true, childList: true });
-
-  var observe_selected_date = document.querySelector("#date_text");
-  var date_observer = new MutationObserver(function () {
-    changeConfirmedCases();
-  });
-  selected_observer.observe(observe_selected_date, { subtree: true, childList: true });
-
-
-  // SET SLIDER LISTENER
+  // SET SLIDER LISTENER (DEPRECATED)
   d3.select("#mySlider")
     .property('value', "0")
     .attr('max', c19_number_of_dates - 1)
     .on("input", function (d) {
       selectedValue = this.value
-      changeDate(sorted_data, selectedValue)
     })
 
 
-  // INITIAL RENDER
+  // INITIAL RENDER - CREATE D3 BAR CHART
   renderCovidBars(sorted_data);
 
+  // INITIAL RENDER - CREATE CALENDAR ELEMENTS
   createCalendarSlider(c19_dates);
 
-});
-
-// CHANGE D3 ELEMENTS AND 3D SCENE ELEMENTS BASED ON THE CLICKED OBJECT
-function changeConfirmedCases() {
-  let selected_index = Number(d3.select("#selected_index").html());
-  let selected_date = d3.select("#date_text").html();
-  if (Number(selected_index) != -1) {
-    let selected_cases = sorted_data[selected_index][selected_date];
-    d3.select("#cases_text").html(String(selected_cases[0]));
-
-    SCENE_3D_UPDATE_SELECTION_RING(sorted_data, selected_index)
-  }
-}
+}); // endif csv load success
 
 
 // SET D3 ELEMENTS and RENDER THEM
@@ -249,7 +220,13 @@ function renderCovidBars(data) {
         return xLinScale(d[selected_date][0]);
     })
     .attr('height', bar_height - 2)
-    .attr('fill', d => d.colour);
+    .attr('fill', d => d.colour)
+    .attr('id', (d, i) => "bar_id_" + i)
+    .on("click", function () {
+      let clicked_bar_id = d3.select(this).attr("id").substr(7);
+      console.log("CLICKED BAR: " + clicked_bar_id);
+      eventDISPATCH(undefined, clicked_bar_id, x_position, selected_table);
+    });
 
   all_countries = svg.selectAll('text.country_label')
     .data(data)
@@ -353,9 +330,10 @@ function createCalendarSlider(dates_array) {
       cal_svg.select('#' + "text_cal_mon_" + date_split[0] + "_year_" + date_split[2]).attr('x', day_counter * calendar_day_cell_w / 2)
     }
 
-    // add day rectangle and text
+    // add day rectangle and text (GROUP ELEMENT)
     let date_i_g = cal_svg.append('g')
-      .attr("transform", "translate(" + i * calendar_day_cell_w + "," + calendar_day_cell_h * 1 + ")");
+      .attr("transform", "translate(" + i * calendar_day_cell_w + "," + calendar_day_cell_h * 1 + ")")
+      .attr("id", "g_cal_" + String(d));
 
     date_i_g.append('rect')
       .attr('y', 0)
@@ -368,12 +346,19 @@ function createCalendarSlider(dates_array) {
         let id_ = d3.select(this).attr("id");
         console.log(id_)
       })
-    .on('mouseover', function (d) {
-      d3.select(this).style("fill", d3.select(this).style("stroke") );
-    })
-    .on('mouseout', function (d) {
-      d3.select(this).style("fill", "rgb(41, 12, 14)");
-    });
+      .on('mouseover', function (d) {
+        d3.select(this).style("fill", d3.select(this).style("stroke"));
+      })
+      .on('mouseout', function (d) {
+        d3.select(this).style("fill", "rgb(41, 12, 14)");
+      })
+      .on("click", function () {
+        let clicked_id = d3.select(this).attr("id").substr(4);
+        let parent_xpos = d3.select(this.parentNode).attr('transform').split("(")[1].split(",")[0];
+
+        eventDISPATCH(clicked_id, selected_place_index, parent_xpos, selected_table);
+      });
+
 
     date_i_g.append('text')
       .attr('y', calendar_day_cell_h / 2 + 5)
@@ -382,10 +367,23 @@ function createCalendarSlider(dates_array) {
       .attr('text-anchor', 'middle')
       .text(date_split[1]);
 
+
+
     cal_svg.attr('width', 100 + calendar_day_cell_w + i * calendar_day_cell_w);
     cal_svg.attr('height', calendar_day_cell_h * 2);
+
+
   });
 
+  selected_date_marker = cal_svg.append('rect')
+    .attr('y', calendar_day_cell_h)
+    .attr('x', 0)
+    .attr("id", "cal_selected_date")
+    .attr('fill', "transparent")
+    .attr("stroke-width", "2px")
+    .attr("stroke", "white")
+    .attr('height', calendar_day_cell_w)
+    .attr('width', calendar_day_cell_h)
 }
 
 
@@ -455,14 +453,67 @@ function changeDate(data, index) {
     .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
 }
 
-function testFunction(){
-  console.log( "TEST CALLED" );
+
+// GLOBAL SELECTIONS
+var selected_place_index = -1;
+var selected_date = "1/22/20"; //init
+var x_position = 0; //init
+var selected_table = 0; //confirmed
+
+function eventDISPATCH(date, index, x_pos, table) {
+  selected_place_index = index;
+  if (date != undefined)
+    selected_date = date;
+  x_position = x_pos;
+  selected_table = table;
+
+  console.log(selected_date);
+
+  changeGlobalDate(selected_date);
+  markSelectedCalendarDate(x_position);
+  changeClickedCountryProvince(selected_place_index, selected_date);
+
+  //d3
+  changeDate(sorted_data, c19_dates.indexOf(selected_date));
 }
 
-function eventDISPATCH( date, index ){
-
+function markSelectedCalendarDate(x_pos) {
+  selected_date_marker.attr('x', x_pos);
 }
 
-function selectCalendarDate( date ){
+function changeGlobalDate(date) {
+  d3.select("#date_text").html(date);
+  SCENE_3D_updateDataPoints(sorted_data, date)
+}
 
+function changeClickedCountryProvince(index, date) {
+  if (index === -1)
+    return;
+  let selected_country = sorted_data[index]["Country/Region"];
+  let selected_province = sorted_data[index]["Province/State"];
+  let selected_cases = sorted_data[index][date][0];
+
+  d3.select("#country_text").html(selected_country);
+  d3.select("#province_text").html(selected_province);
+  d3.select("#cases_text").html(selected_cases);
+
+  SCENE_3D_UPDATE_SELECTION_RING(sorted_data, index);
+}
+
+// arrow keys even listener
+document.addEventListener('keydown', logKey);
+
+
+function logKey(e) {
+  let date_index = c19_dates.indexOf(selected_date);
+
+  if (e.code === "ArrowRight")
+    date_index != (c19_number_of_dates - 1) ? date_index++ : date_index = dateindex;
+
+  if (e.code === "ArrowLeft")
+    date_index != 0 ? date_index-- : date_index = date_index = dateindex;
+
+  let new_selected_date = c19_dates[date_index];
+
+  eventDISPATCH(new_selected_date, selected_place_index, (date_index * calendar_day_cell_w), selected_table)
 }

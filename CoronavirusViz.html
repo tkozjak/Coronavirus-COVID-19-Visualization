@@ -80,7 +80,7 @@
 
       left: 620px;
       right: 10px;
-      bottom: 145px;
+      bottom: 195px;
 
       height: 140px;
       min-height: 140px;
@@ -144,8 +144,8 @@
       position: absolute;
       left: 30px;
       right: 30px;
-      bottom: 450px;
-      height: 120px;
+      bottom: 50px;
+      height: 104px;
 
       overflow: auto;
       /*
@@ -156,7 +156,7 @@
     rect.cal-day {
       fill: rgb(41, 12, 14);
       opacity: 0.9;
-      stroke-width: 2px;
+      stroke-width: 5px;
       stroke: rgb(70, 49, 12);
     }
 
@@ -198,9 +198,9 @@
       margin: 0px;
       padding: 0px;
       left: 620px;
-      right: 10px;
+      right: 230px;
       bottom: 5px;
-      height: 90px;
+      height: 140px;
       min-height: 90px;
       padding: 20px;
     }
@@ -246,12 +246,12 @@
     div.date_wrapper {
       position: absolute;
 
-      left: 620px;
-      width: 250px;
-      min-width: 250px;
-      height: 150px;
-      min-height: 150px;
-      top: 10px;
+      right: 10px;
+      width: 210px;
+      min-width: 210px;
+      height: 180px;
+      min-height: 180px;
+      bottom: 5px;
     }
 
     label.date_selected {
@@ -268,7 +268,7 @@
       position: absolute;
       padding: 5px;
 
-      font-size: 30px;
+      font-size: 25px;
       color: white;
       font-family: "Lato";
       font-weight: 300;
@@ -319,6 +319,10 @@
 
     .stack-top {
       z-index: 9;
+    }
+
+    .stack-top_2 {
+      z-index: 10;
     }
 
     .title_text {
@@ -473,11 +477,11 @@
 
     <!-- SLIDER -->
     <div class="slider_box stack-top fill_1">
-      <div class="slider_text_date slider_start_date stack-top" id="SStartDate">Start date</div>
-      <div class="slider_text_date slider_end_date stack-top" id="SEndDate">End date</div>
-      <div class="slider_center stack-top fill_2">
-        <input class="slider stack-top" type="range" name="mySlider" id="mySlider" min="0" max="30" value="0">
+
+      <div class="calendar-wrapper stack-top">
+        <svg class="stack-top_2" id="calendar-svg"></svg>
       </div>
+
       <div id="license_text" class="slider_text_date slider_start_date stack-top"
         style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">
         This app
@@ -492,12 +496,11 @@
     </div>
 
 
-    <div class="date_wrapper stack-top fill_2" style="top:10px">
+    <div class="date_wrapper stack-top fill_2">
       <label class="date_selected stack-top">DATE</label>
       <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
-
-    <div class="hidden" id="selected_index">-1</div>
+    
 
     <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
 
@@ -531,16 +534,13 @@
         </div>
       </div>
 
-      <div class="calendar-wrapper stack-top">
-        <svg class="stack-top" id="calendar-svg"></svg>
-      </div>
+ 
 
     </div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
   </div>
-
 
 
   <script src="js/three.min.js"></script> <!-- THREE JS library -->
@@ -600,7 +600,7 @@
     }
     //controls.screenSpacePanning = true;
 
-    // event listeners
+    // CLICK AND TOUCH event listeners
     renderer.domElement.addEventListener('click', raycast, false);
     renderer.domElement.addEventListener('touchend', onDocumentTouchEnd, false);
 
@@ -611,11 +611,7 @@
     //
     //***************************************************************************************
 
-    // HELPER GRID
-    //var helper = new THREE.GridHelper(1000, 40, 0x303030, 0x303030);
-    //helper.position.y = 0;
-    //scene.add(helper);
-
+    // HELPER POLAR GRID
     var helper = new THREE.PolarGridHelper(50, 8, 8, 128);
     helper.material.opacity = 0.2;
     helper.material.transparent = true;
@@ -662,7 +658,6 @@
     globe_sphere_emissive_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_spec_tex.generateMipmaps = false;
     globe_sphere_emissive_tex.anisotropy = 16;
-
 
 
 
@@ -717,7 +712,6 @@
       globe_sphere_obj_spawned = true;
     });
 
-
     // color scale
     const colorScale_2 = d3.scaleLinear()
       .domain([0, 1000, 2000])
@@ -725,7 +719,7 @@
       .interpolate(d3.interpolateRgb); //interpolateHsl interpolateHcl interpolateRgb
 
 
-    // ADD DATA POINTS on globe
+    // ADD DATA POINTS ON OUR GLOBE
     var data_points_pos_array = [];
     var factor = 0.3;
 
@@ -818,7 +812,7 @@
         else
           d.visible = true;
 
-        var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+        let position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
         d.position.copy(position);
         d.scale.y = scale;
         d.material.color = new THREE.Color(color);
@@ -826,15 +820,7 @@
     }
 
 
-    function updateLightDirection() {
-      directionalLight.position.x = camera.position.x;
-      directionalLight.position.y = camera.position.y;
-      directionalLight.position.z = camera.position.z;
-    }
-
-
-
-    // RENDER FUNCTION
+    // RENDER / UPDATE FUNCTION
     var render = function () {
 
       requestAnimationFrame(render);
@@ -846,18 +832,27 @@
       renderer.render(scene, camera);
     };
 
+    // recalculate projection when windows resized
     function onWindowResize() {
       camera.aspect = window.innerWidth / window.innerHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     }
 
+    // update light direction when camera changed
+    function updateLightDirection() {
+      directionalLight.position.x = camera.position.x;
+      directionalLight.position.y = camera.position.y;
+      directionalLight.position.z = camera.position.z;
+    }
 
-    // RAYCASTING EVENT HANDLER
+
+    // RAYCASTING EVENT HANDLERS
     var raycaster = new THREE.Raycaster();
     var mouse = new THREE.Vector2();
     raycaster.params.Points.threshold = 10.0;
 
+    // mouse click raycast
     function raycast(event) {
       console.log("Mouse click event.");
 
@@ -878,12 +873,11 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        d3.select("#country_text").html(name[0]);
-        d3.select("#province_text").html(name[1]);
-        d3.select("#selected_index").html(name[2]);
+        eventDISPATCH( selected_date, name[2], x_position, selected_table );
       }
     }
 
+    // touch tap raycast
     function onDocumentTouchEnd(event) {
       console.log("Touch event.");
       var touches = event.changedTouches;
@@ -906,22 +900,13 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        d3.select("#country_text").html(name[0]);
-        d3.select("#province_text").html(name[1]);
-        d3.select("#selected_index").html(name[2]);
+        eventDISPATCH( selected_date, name[2], x_position, selected_table );
       }
     }
 
+
     // CALL RENDER
     render();
-
-    // arrow keys even listener
-    document.addEventListener('keydown', logKey);
-    function logKey(e) {
-      console.log(e.code);
-    }
-
-    testFunction();
 
   </script>
 </body>
