@@ -6,6 +6,7 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 // JOHNS HOPKINS REPO
 // confirmed
 var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+
 // dead
 //var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 

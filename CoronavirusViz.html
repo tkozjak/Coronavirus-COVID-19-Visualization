@@ -7,6 +7,9 @@
   <title>COVID-19</title>
 
   <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin="" />
 
   <style>
     * {
@@ -500,7 +503,7 @@
       <label class="date_selected stack-top">DATE</label>
       <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
-    
+
 
     <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
 
@@ -534,9 +537,11 @@
         </div>
       </div>
 
- 
+
 
     </div>
+
+    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px;" id="mapid"></div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -545,9 +550,12 @@
 
   <script src="js/three.min.js"></script> <!-- THREE JS library -->
   <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
-  <script src='js/dat.gui.min.js'></script> <!-- DAT GUI library -->
   <script src="js/d3.min.js"></script> <!-- D3 library -->
 
+  <!-- Make sure you put this AFTER Leaflet's CSS -->
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+    crossorigin=""></script>
 
   <!-- BARCHARTS -->
   <script src="bar_chart.js"></script>
@@ -555,7 +563,17 @@
   <script>
     // replace console outputs w empty function
     //console.log = function () { };
-
+/*
+    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+      maxZoom: 18,
+      id: 'mapbox/streets-v11',
+      tileSize: 512,
+      zoomOffset: -1,
+      accessToken: 'your.mapbox.access.token'
+    }).addTo(mymap);
+*/
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
     var h = window.innerHeight;
@@ -873,7 +891,7 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        eventDISPATCH( selected_date, name[2], x_position, selected_table );
+        eventDISPATCH(selected_date, name[2], x_position, selected_table);
       }
     }
 
@@ -900,7 +918,7 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        eventDISPATCH( selected_date, name[2], x_position, selected_table );
+        eventDISPATCH(selected_date, name[2], x_position, selected_table);
       }
     }
 
