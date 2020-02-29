@@ -28,7 +28,7 @@
     div {
       border-color: coral;
       border-style: solid;
-      border-width: 0px;
+      border-width: 1px;
       margin: 0px;
       padding: 0px;
     }
@@ -36,7 +36,7 @@
     label {
       border-color: rgb(229, 255, 0);
       border-style: solid;
-      border-width: 0px;
+      border-width: 1px;
       margin: 0px;
       padding: 0px;
 
@@ -45,7 +45,7 @@
     svg {
       border-color: rgb(0, 255, 64);
       border-style: solid;
-      border-width: 0px;
+      border-width: 1px;
       margin: 0px;
       padding: 0px;
 
@@ -143,6 +143,7 @@
       transform: translate(0%, -50%);
     }
 
+    /* CALENDAR ELEMENTS */
     div.calendar-wrapper {
       position: absolute;
       left: 30px;
@@ -155,12 +156,48 @@
       border-color: rgb(94, 50, 34);
       border-width: 1px;*/
     }
-
     rect.cal-day {
       fill: rgb(41, 12, 14);
       opacity: 0.9;
       stroke-width: 5px;
       stroke: rgb(70, 49, 12);
+    }
+
+    /* SVG CONTAINER ELEMENTS */
+    svg.con-fill {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.9;
+    }
+    svg.fill {
+      /*width: 100%;*/
+      left: 0px;
+      width: 100%;
+      height: 2000px;
+      /*position: relative;*/
+      top: 0px;
+      opacity: 0.9;
+      display: none;
+    }
+    .con-country-txt {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+    }
+    .con-province-txt {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+      pointer-events: none;
+    }
+    .con-value-txt {
+      font-size: 18px;
+      fill: rgb(255, 255, 255);
+      font-family: "Lato";
+      font-weight: 300;
     }
 
 
@@ -311,14 +348,7 @@
       min-height: 75px;
     }
 
-    svg.fill {
-      width: 100%;
-      height: 2000px;
-      /*position: relative;*/
-      top: 0px;
-      left: 0px;
-      opacity: 0.9;
-    }
+   
 
     .stack-top {
       z-index: 9;
@@ -475,7 +505,8 @@
 <body>
   <div id="main_container" class="wrapper">
     <div class="side_box stack-top fill_1" id="side_box_div">
-      <svg class="fill stack-top" id="bar_chart_container"></svg>
+      <svg class="fill stack-top" id="bar_chart_container" style="visibility: hidden; right:auto;"></svg>
+      <svg class="con-fill stack-top" id="svg_con_element"></svg>
     </div>
 
     <!-- SLIDER -->

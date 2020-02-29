@@ -160,7 +160,6 @@ d3.csv(covid_url).then(function (data) {
   // CREATE 3D SCENE DATA OBJECTS
   SCENE_3D_addDataPoints(sorted_data, c19_dates[0]);
 
-
   // SET SLIDER LISTENER (DEPRECATED)
   d3.select("#mySlider")
     .property('value', "0")
@@ -169,14 +168,245 @@ d3.csv(covid_url).then(function (data) {
       selectedValue = this.value
     })
 
-
   // INITIAL RENDER - CREATE D3 BAR CHART
   renderCovidBars(sorted_data);
+
+  // TEMP NEW
+  initConfirmedBarChart(sorted_data);
 
   // INITIAL RENDER - CREATE CALENDAR ELEMENTS
   createCalendarSlider(c19_dates);
 
 }); // endif csv load success
+
+
+// d3 visual elements (svg elements)
+var svg_con; // svg container for svg elements (confirmed cases)
+svg_con = d3.select("#svg_con_element");
+var con_bc_groups; // array of group svg elements that hold (confirmed cases) bar chart elements
+var con_bc_bars;
+var con_bc_values; // array of svg text elements that are confirmed cases values
+var con_bc_countries; // array of svg text elements that are names of countries
+var con_bc_provinces; // array of svg text elements that are names of provinces
+
+// d3 non-visual elements
+var con_xScaleLog;
+var con_yScaleLin;
+
+// bar chart visual parameters
+var con_l_offset = 150;
+var con_top_padding = 100;
+var con_bottom_padding = 100;
+var con_max_bar_width = 400;
+
+var con_bc_height = -1;
+var con_bar_height = 40;
+var con_bar_padding = 2;
+
+function initConfirmedBarChart(in_data) {
+
+  // set at initial date
+  let initial_date = c19_dates[0];
+  let max_val_init_date = d3.max(in_data, d => Number(d[initial_date][0]));
+
+  // calculate the total height of our bar chart
+  let total_bc_height = (c19_number_of_places * con_bar_height) + (c19_number_of_places - 1) * con_bar_padding;
+  // ...and the total height of svg container 
+  let total_container_height = total_bc_height + con_top_padding + con_bottom_padding;
+  svg_con.style("height", total_container_height + 'px');
+
+  //create scales
+  con_xScaleLog = d3.scaleLog()
+    .base(Math.E)
+    .clamp(true)
+    .domain([0.1, max_val_init_date])
+    .range([0, con_max_bar_width]);
+
+  con_yScaleLin = d3.scaleLinear()
+    .domain([c19_number_of_places - 1, 0])
+    .range([con_top_padding, con_top_padding + total_bc_height]);
+
+  // create bar groups - they control vertical placement
+  con_bc_groups = svg_con.selectAll('g')
+    .data(in_data)
+    .enter().append('g')
+    .attr("transform", function (d) {
+      let y_pos = con_yScaleLin(d[initial_date][1]);
+      return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
+    })
+
+  svg_con.selectAll('g').append('rect');
+
+  // create rect bars
+  con_bc_bars = svg_con.selectAll('rect')
+    .data(in_data)
+    .attr('y', 0)
+    .attr('x', 0)
+    .attr('width', function (d) {
+      if (d[initial_date][0] === 0.0)
+        return 1;
+      if (use_log == true)
+        return con_xScaleLog(d[initial_date][0]);
+      else
+        return con_xScaleLog(d[initial_date][0]);
+    })
+    .attr('height', con_bar_height - con_bar_padding)
+    .attr('fill', d => d.colour)
+
+
+
+  con_bc_countries = svg_con.selectAll('g').append('text')
+    .attr('class', 'con-country-txt')
+    .attr('text-anchor', 'start')
+
+  con_bc_countries.data(in_data)
+    .append('tspan')
+    .attr('x', 5).attr('y', con_bar_height / 2 + 3).attr('dy', -7)
+    .text(function (d) {
+      let c_s = String(d["Country/Region"]);
+      let space_pos = c_s.indexOf(' ');
+      return c_s.substring(0, space_pos);
+    })
+
+  con_bc_countries.data(in_data)
+    .append('tspan')
+    .attr('x', 5).attr('y', con_bar_height / 2 + 3).attr('dy', +7)
+    .text(function (d) {
+      let c_s = String(d["Country/Region"]);
+      let space_pos = c_s.indexOf(' ');
+      return c_s.substring(space_pos + 1);
+    })
+
+
+
+  con_bc_provinces = svg_con.selectAll('g').append('text')
+    .attr('class', 'con-province-txt')
+    .attr('text-anchor', 'end')
+
+  con_bc_provinces.data(in_data)
+    .append('tspan')
+    .attr('x', -5).attr('y', con_bar_height / 2 + 3).attr('dy', -7)
+    .text(function (d) {
+      let c_s = String(d["Province/State"]);
+      let space_pos = c_s.indexOf(' ');
+      return c_s.substring(0, space_pos);
+    })
+
+  con_bc_provinces.data(in_data)
+    .append('tspan')
+    .attr('x', -5).attr('y', con_bar_height / 2 + 3).attr('dy', +7)
+    .text(function (d) {
+      let c_s = String(d["Province/State"]);
+      let space_pos = c_s.indexOf(' ');
+      return c_s.substring(space_pos + 1);
+    })
+
+
+
+  con_bc_values = svg_con.selectAll('g').append('text')
+    .attr('class', 'con-value-txt')
+    .attr('text-anchor', 'end')
+
+  con_bc_values.data(in_data)
+    .attr('x', function (d) {
+      if (d[initial_date][0] === 0.0)
+        return 1;
+      if (use_log == true)
+        return con_xScaleLog(d[initial_date][0]);
+      else
+        return con_xScaleLog(d[initial_date][0]);
+    })
+    .attr('y', con_bar_height / 2)
+    .text(function (d) {
+      let c_value = d[initial_date][0];
+      if (c_value == 0)
+        return "";
+      else
+        return c_value;
+    })
+
+
+  console.log("TAG group: " + con_bc_groups.node().tagName);
+  console.log("TAG rect: " + con_bc_bars.node().tagName);
+  console.log("TAG rect: " + con_bc_countries.node().tagName);
+
+}
+
+function updateConfirmedBarChart(in_data, in_index) {
+
+  let changed_date = c19_dates[in_index];
+
+  // UPDATE 3D SCENE DATA OBJECTS
+  //SCENE_3D_updateDataPoints(sorted_data, selected_date);
+
+  let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
+
+  // update scales
+  //create scales
+  con_xScaleLog.domain([0.1, max_value_sel_date])
+    .range([0, con_max_bar_width]);
+  /*
+    con_yScaleLin = d3.scaleLinear()
+      .domain([c19_number_of_places - 1, 0])
+      .range([con_top_padding, con_top_padding + total_bc_height]);
+  */
+
+  con_bc_bars.transition().ease(d3.easeLinear).duration(1000)
+    .attr('width', function (d) {
+      if (d[changed_date][0] === 0.0)
+        return 1;
+      if (use_log == true)
+        return con_xScaleLog(d[changed_date][0]);
+      else
+        return con_xScaleLog(d[changed_date][0]);
+    })
+  //.attr('y', d => con_yScaleLin(d[changed_date][1]))
+
+  con_bc_groups.transition().ease(d3.easeLinear).duration(1000)
+    .attr("transform", function (d) {
+      let y_pos = con_yScaleLin(d[changed_date][1]);
+      return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
+    })
+
+
+  con_bc_values
+  /*.text(function (d) {
+    let c_value = d[changed_date][0];
+    if (c_value === 0)
+      return "";
+    else
+      return c_value;
+  })*/
+    .transition().ease(d3.easeLinear).duration(1000)
+    .attr('x', d => con_xScaleLog(d[changed_date][0]));
+
+  con_bc_values
+  /*.text(function (d) {
+    let c_value = d[changed_date][0];
+    if (c_value === 0)
+      return "";
+    else
+      return c_value;
+  })*/ /*
+    .transition()
+    .tween("text", function (d) {
+      var selection = d3.select(this);
+      var start = d3.select(this).text();
+      var end;
+      let c_value = d[changed_date][0];
+      if (c_value === 0)
+        end = "";
+      else
+        end = c_value;
+      // specified end value
+      var interpolator = d3.interpolateNumber(start, end); // d3 interpolator
+
+      return function (t) { selection.text(Math.round(interpolator(t))); };  // return value
+
+    }).duration(1000);
+
+*/
+}
 
 
 // SET D3 ELEMENTS and RENDER THEM
@@ -476,6 +706,7 @@ function eventDISPATCH(date, index, x_pos, table) {
 
   //d3
   changeDate(sorted_data, c19_dates.indexOf(selected_date));
+  updateConfirmedBarChart(sorted_data, c19_dates.indexOf(selected_date));
 }
 
 function markSelectedCalendarDate(x_pos) {
