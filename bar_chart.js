@@ -593,6 +593,7 @@ function createCalendarSlider(dates_array) {
         let parent_xpos = d3.select(this.parentNode).attr('transform').split("(")[1].split(",")[0];
 
         eventDISPATCH(clicked_id, selected_place_index, parent_xpos, selected_table);
+        
       });
 
 
@@ -712,6 +713,7 @@ function eventDISPATCH(date, index, x_pos, table) {
   //d3
   //changeDate(sorted_data, c19_dates.indexOf(selected_date));
   updateConfirmedBarChart(sorted_data, c19_dates.indexOf(selected_date));
+  d3.select("#total_cases_text").html(c19_total_cases[c19_dates.indexOf(selected_date)]);
 }
 
 function markSelectedCalendarDate(x_pos) {
