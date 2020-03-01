@@ -336,20 +336,11 @@ function updateConfirmedBarChart(in_data, in_index) {
 
   let changed_date = c19_dates[in_index];
 
-  // UPDATE 3D SCENE DATA OBJECTS
-  //SCENE_3D_updateDataPoints(sorted_data, selected_date);
-
   let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
 
-  // update scales
-  //create scales
+  // update scales according to the biggest value on the changed day
   con_xScaleLog.domain([0.1, max_value_sel_date])
     .range([0, con_max_bar_width]);
-  /*
-    con_yScaleLin = d3.scaleLinear()
-      .domain([c19_number_of_places - 1, 0])
-      .range([con_top_padding, con_top_padding + total_bc_height]);
-  */
 
   con_bc_bars.transition().ease(d3.easeLinear).duration(1000)
     .attr('width', function (d) {
@@ -360,52 +351,30 @@ function updateConfirmedBarChart(in_data, in_index) {
       else
         return con_xScaleLog(d[changed_date][0]);
     })
-  //.attr('y', d => con_yScaleLin(d[changed_date][1]))
 
+  // update bar y position according to the rank on the changed day
   con_bc_groups.transition().ease(d3.easeLinear).duration(1000)
     .attr("transform", function (d) {
       let y_pos = con_yScaleLin(d[changed_date][1]);
       return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
     })
 
-
+  // update postions and texts of values  
   con_bc_values
-  /*.text(function (d) {
-    let c_value = d[changed_date][0];
-    if (c_value === 0)
-      return "";
-    else
-      return c_value;
-  })*/
     .transition().ease(d3.easeLinear).duration(1000)
-    .attr('x', d => con_xScaleLog(d[changed_date][0]));
-
-  con_bc_values
-  /*.text(function (d) {
-    let c_value = d[changed_date][0];
-    if (c_value === 0)
-      return "";
-    else
-      return c_value;
-  })*/ /*
-    .transition()
+    .attr('x', d => con_xScaleLog(d[changed_date][0]))
     .tween("text", function (d) {
-      var selection = d3.select(this);
-      var start = d3.select(this).text();
-      var end;
+      let start = d3.select(this).text();
+      let end;
       let c_value = d[changed_date][0];
       if (c_value === 0)
         end = "";
       else
         end = c_value;
-      // specified end value
+
       var interpolator = d3.interpolateNumber(start, end); // d3 interpolator
-
-      return function (t) { selection.text(Math.round(interpolator(t))); };  // return value
-
-    }).duration(1000);
-
-*/
+      return function (t) { d3.select(this).text(Math.round(interpolator(t))) };
+    });
 }
 
 
@@ -705,7 +674,7 @@ function eventDISPATCH(date, index, x_pos, table) {
   changeClickedCountryProvince(selected_place_index, selected_date);
 
   //d3
-  changeDate(sorted_data, c19_dates.indexOf(selected_date));
+  //changeDate(sorted_data, c19_dates.indexOf(selected_date));
   updateConfirmedBarChart(sorted_data, c19_dates.indexOf(selected_date));
 }
 
