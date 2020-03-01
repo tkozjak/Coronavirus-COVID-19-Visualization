@@ -28,7 +28,7 @@
     div {
       border-color: coral;
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
     }
@@ -36,7 +36,7 @@
     label {
       border-color: rgb(229, 255, 0);
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
 
@@ -45,7 +45,7 @@
     svg {
       border-color: rgb(0, 255, 64);
       border-style: solid;
-      border-width: 1px;
+      border-width: 0px;
       margin: 0px;
       padding: 0px;
 
@@ -150,17 +150,22 @@
       right: 30px;
       bottom: 50px;
       height: 104px;
-
       overflow: auto;
-      /*
-      border-color: rgb(94, 50, 34);
-      border-width: 1px;*/
+      
+      border-color: rgb(151, 106, 89);
+      border-width: 1px;
     }
     rect.cal-day {
-      fill: rgb(41, 12, 14);
+      fill: rgb(82, 41, 44);
       opacity: 0.9;
-      stroke-width: 5px;
-      stroke: rgb(70, 49, 12);
+      stroke-width: 3px;
+      stroke: rgb(139, 102, 37);
+    }
+    rect.cal-day-sel {
+      fill: rgb(172, 76, 82);
+      opacity: 0.9;
+      stroke-width: 3px;
+      stroke: rgb(175, 129, 50);
     }
 
     /* SVG CONTAINER ELEMENTS */
@@ -182,7 +187,7 @@
     }
     .con-country-txt {
       font-size: 12px;
-      fill: white;
+      fill: rgb(255, 255, 255);
       font-family: "Lato";
       font-weight: 300;
     }
@@ -572,7 +577,7 @@
 
     </div>
 
-    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px;" id="mapid"></div>
+    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px; display: none;" id="mapid"></div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>

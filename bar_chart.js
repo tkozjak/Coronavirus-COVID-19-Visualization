@@ -5,20 +5,20 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 
 // JOHNS HOPKINS REPO
 // confirmed
-var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
+var covid_confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 
 // dead
 //var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 
 
-var url = CheckUrl(covid_url);
+var url = CheckUrl(covid_confirmed_url);
 if (url == true) {
   //url exists    
 }
 else {
   //url not exists
   console.log("file does not exist!")
-  covid_url = fallback_url;
+  covid_confirmed_url = fallback_url;
 }
 
 function CheckUrl(url) {
@@ -90,7 +90,7 @@ var province_font_size = 12;
 
 
 // LOAD AND SET COVID-19 DATA
-d3.csv(covid_url).then(function (data) {
+d3.csv(covid_confirmed_url).then(function (data) {
 
   console.log("COVID-19. First row: ");
   console.log(data[0]);
@@ -122,7 +122,7 @@ d3.csv(covid_url).then(function (data) {
   data.forEach(d => {
     d.Lat = +d.Lat,
       d.Long = +d.Long,
-      d.colour = d3.hsl(Math.random() * 360, 0.75, 0.75)
+      d.colour = d3.hsl(Math.random() * 360, 0.65, 0.45)
   });
 
 
@@ -169,7 +169,7 @@ d3.csv(covid_url).then(function (data) {
     })
 
   // INITIAL RENDER - CREATE D3 BAR CHART
-  renderCovidBars(sorted_data);
+  // renderCovidBars(sorted_data);
 
   // TEMP NEW
   initConfirmedBarChart(sorted_data);
@@ -195,13 +195,18 @@ var con_yScaleLin;
 
 // bar chart visual parameters
 var con_l_offset = 150;
-var con_top_padding = 100;
+var con_top_padding = 50;
 var con_bottom_padding = 100;
 var con_max_bar_width = 400;
-
 var con_bc_height = -1;
 var con_bar_height = 40;
 var con_bar_padding = 2;
+
+// text elements
+var con_country_font_size = 12;
+var con_province_font_size = 12;
+var con_value_font_size = 16;
+
 
 function initConfirmedBarChart(in_data) {
 
@@ -214,6 +219,11 @@ function initConfirmedBarChart(in_data) {
   // ...and the total height of svg container 
   let total_container_height = total_bc_height + con_top_padding + con_bottom_padding;
   svg_con.style("height", total_container_height + 'px');
+
+  //some common layout stuff
+  let c_offset = ~~(con_country_font_size / 2);
+  let p_offset = ~~(con_province_font_size / 2);
+  let v_offset = ~~(con_value_font_size / 2);
 
   //create scales
   con_xScaleLog = d3.scaleLog()
@@ -244,7 +254,7 @@ function initConfirmedBarChart(in_data) {
     .attr('x', 0)
     .attr('width', function (d) {
       if (d[initial_date][0] === 0.0)
-        return 1;
+        return 3;
       if (use_log == true)
         return con_xScaleLog(d[initial_date][0]);
       else
@@ -252,16 +262,25 @@ function initConfirmedBarChart(in_data) {
     })
     .attr('height', con_bar_height - con_bar_padding)
     .attr('fill', d => d.colour)
+    .attr('id', (d, i) => "bar_id_" + i)
+    .on("click", function () {
+      let clicked_bar_id = d3.select(this).attr("id").substr(7);
+      console.log("CLICKED BAR: " + clicked_bar_id);
+      eventDISPATCH(undefined, clicked_bar_id, undefined, undefined);
+    });
 
 
-
+  // create countries text
   con_bc_countries = svg_con.selectAll('g').append('text')
     .attr('class', 'con-country-txt')
+    .style('font-size', con_country_font_size + "px")
+    //.style( 'fill', "white")
     .attr('text-anchor', 'start')
 
+  // ..and append two spans for country names - split in two if name is more than one word
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + 3).attr('dy', -7)
+    .attr('x', 5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 - c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
@@ -270,60 +289,71 @@ function initConfirmedBarChart(in_data) {
 
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + 3).attr('dy', +7)
+    .attr('x', 5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 + c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
       return c_s.substring(space_pos + 1);
     })
 
-
-
+  // create provinces text
   con_bc_provinces = svg_con.selectAll('g').append('text')
     .attr('class', 'con-province-txt')
+    .style('font-size', con_province_font_size + "px")
     .attr('text-anchor', 'end')
 
+  // ...and append two spans for province names - split in two if name is more than one word
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + 3).attr('dy', -7)
+    .attr('x', -5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', -p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
+      let ws_c = c_s.split(" ").length - 1
       let space_pos = c_s.indexOf(' ');
+      if (ws_c > 2) {
+        space_pos = c_s.indexOf(' ', space_pos + 1);
+      }
       return c_s.substring(0, space_pos);
     })
 
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + 3).attr('dy', +7)
+    .attr('x', -5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', +p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
+      let ws_c = c_s.split(" ").length - 1
       let space_pos = c_s.indexOf(' ');
+      if (ws_c > 2) {
+        space_pos = c_s.indexOf(' ', space_pos + 1);
+      }
       return c_s.substring(space_pos + 1);
     })
 
-
-
+  // create values text
   con_bc_values = svg_con.selectAll('g').append('text')
     .attr('class', 'con-value-txt')
+    .style('font-size', con_value_font_size + "px")
+    .attr('y', con_bar_height / 2 + v_offset  - con_bar_padding )
     .attr('text-anchor', 'end')
+    .style("opacity", function (d) {
+      let c_value = d[initial_date][0];
+      if (c_value < 1.0)
+        return "0";
+      else
+        return "1";
+    })
 
   con_bc_values.data(in_data)
     .attr('x', function (d) {
       if (d[initial_date][0] === 0.0)
         return 1;
       if (use_log == true)
-        return con_xScaleLog(d[initial_date][0]);
+        return con_xScaleLog(d[initial_date][0])-con_bar_padding*2;
       else
-        return con_xScaleLog(d[initial_date][0]);
+        return con_xScaleLog(d[initial_date][0])-con_bar_padding*2;
     })
-    .attr('y', con_bar_height / 2)
-    .text(function (d) {
-      let c_value = d[initial_date][0];
-      if (c_value == 0)
-        return "";
-      else
-        return c_value;
-    })
+    .text( d=>d[initial_date][0] )
+    
 
 
   console.log("TAG group: " + con_bc_groups.node().tagName);
@@ -345,7 +375,7 @@ function updateConfirmedBarChart(in_data, in_index) {
   con_bc_bars.transition().ease(d3.easeLinear).duration(1000)
     .attr('width', function (d) {
       if (d[changed_date][0] === 0.0)
-        return 1;
+        return 3;
       if (use_log == true)
         return con_xScaleLog(d[changed_date][0]);
       else
@@ -359,18 +389,22 @@ function updateConfirmedBarChart(in_data, in_index) {
       return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
     })
 
+  // don't display text if value is zero
+  con_bc_values.style("opacity", function (d) {
+    let c_value = d[changed_date][0];
+    if (c_value < 1.0)
+      return "0";
+    else
+      return "1";
+  })
+
   // update postions and texts of values  
   con_bc_values
     .transition().ease(d3.easeLinear).duration(1000)
-    .attr('x', d => con_xScaleLog(d[changed_date][0]))
+    .attr('x', d => con_xScaleLog(d[changed_date][0])-con_bar_padding*2)
     .tween("text", function (d) {
       let start = d3.select(this).text();
-      let end;
-      let c_value = d[changed_date][0];
-      if (c_value === 0)
-        end = "";
-      else
-        end = c_value;
+      let end = d[changed_date][0];
 
       var interpolator = d3.interpolateNumber(start, end); // d3 interpolator
       return function (t) { d3.select(this).text(Math.round(interpolator(t))) };
@@ -493,7 +527,7 @@ function createCalendarSlider(dates_array) {
 
   dates_array.forEach((d, i) => {
 
-    console.log(d);
+    //console.log(d);
 
     let date_split = d.split("/");
 
@@ -547,10 +581,12 @@ function createCalendarSlider(dates_array) {
         console.log(id_)
       })
       .on('mouseover', function (d) {
-        d3.select(this).style("fill", d3.select(this).style("stroke"));
+        d3.select(this)//.style("fill", d3.select(this).style("stroke"));
+        .attr('class', 'cal-day-sel')
       })
       .on('mouseout', function (d) {
-        d3.select(this).style("fill", "rgb(41, 12, 14)");
+        d3.select(this)//.style("fill", "rgb(41, 12, 14)");
+        .attr('class', 'cal-day')
       })
       .on("click", function () {
         let clicked_id = d3.select(this).attr("id").substr(4);
@@ -569,7 +605,7 @@ function createCalendarSlider(dates_array) {
 
 
 
-    cal_svg.attr('width', 100 + calendar_day_cell_w + i * calendar_day_cell_w);
+    cal_svg.attr('width', calendar_day_cell_w + i * calendar_day_cell_w);
     cal_svg.attr('height', calendar_day_cell_h * 2);
 
 
