@@ -333,7 +333,7 @@ function initConfirmedBarChart(in_data) {
   con_bc_values = svg_con.selectAll('g').append('text')
     .attr('class', 'con-value-txt')
     .style('font-size', con_value_font_size + "px")
-    .attr('y', con_bar_height / 2 + v_offset  - con_bar_padding )
+    .attr('y', con_bar_height / 2 + v_offset - con_bar_padding)
     .attr('text-anchor', 'end')
     .style("opacity", function (d) {
       let c_value = d[initial_date][0];
@@ -348,12 +348,12 @@ function initConfirmedBarChart(in_data) {
       if (d[initial_date][0] === 0.0)
         return 1;
       if (use_log == true)
-        return con_xScaleLog(d[initial_date][0])-con_bar_padding*2;
+        return con_xScaleLog(d[initial_date][0]) - con_bar_padding * 2;
       else
-        return con_xScaleLog(d[initial_date][0])-con_bar_padding*2;
+        return con_xScaleLog(d[initial_date][0]) - con_bar_padding * 2;
     })
-    .text( d=>d[initial_date][0] )
-    
+    .text(d => d[initial_date][0])
+
 
 
   console.log("TAG group: " + con_bc_groups.node().tagName);
@@ -401,7 +401,7 @@ function updateConfirmedBarChart(in_data, in_index) {
   // update postions and texts of values  
   con_bc_values
     .transition().ease(d3.easeLinear).duration(1000)
-    .attr('x', d => con_xScaleLog(d[changed_date][0])-con_bar_padding*2)
+    .attr('x', d => con_xScaleLog(d[changed_date][0]) - con_bar_padding * 2)
     .tween("text", function (d) {
       let start = d3.select(this).text();
       let end = d[changed_date][0];
@@ -582,18 +582,18 @@ function createCalendarSlider(dates_array) {
       })
       .on('mouseover', function (d) {
         d3.select(this)//.style("fill", d3.select(this).style("stroke"));
-        .attr('class', 'cal-day-sel')
+          .attr('class', 'cal-day-sel')
       })
       .on('mouseout', function (d) {
         d3.select(this)//.style("fill", "rgb(41, 12, 14)");
-        .attr('class', 'cal-day')
+          .attr('class', 'cal-day')
       })
       .on("click", function () {
-        let clicked_id = d3.select(this).attr("id").substr(4);
-        let parent_xpos = d3.select(this.parentNode).attr('transform').split("(")[1].split(",")[0];
+        let clicked_id = d3.select(this).attr("id").substr(4); //date
+        let parent_xpos = d3.select(this.parentNode).attr('transform').split("(")[1].split(",")[0]; //marker postion
 
-        eventDISPATCH(clicked_id, selected_place_index, parent_xpos, selected_table);
-        
+        eventDISPATCH(clicked_id, undefined, parent_xpos, undefined);
+
       });
 
 
@@ -698,11 +698,14 @@ var x_position = 0; //init
 var selected_table = 0; //confirmed
 
 function eventDISPATCH(date, index, x_pos, table) {
-  selected_place_index = index;
+  if (index != undefined)
+    selected_place_index = index;
   if (date != undefined)
     selected_date = date;
-  x_position = x_pos;
-  selected_table = table;
+  if (x_pos != undefined)
+    x_position = x_pos;
+  if (table != undefined)
+    selected_table = table;
 
   console.log(selected_date);
 

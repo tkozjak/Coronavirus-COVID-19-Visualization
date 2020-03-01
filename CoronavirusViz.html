@@ -548,28 +548,28 @@
       <div class="info-box-big stack-top fill_2">
         <label class="info-box stack-top">CONFIRMED CASES</label>
         <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="cases_text">CCASES</div>
+          <div class="big-text font_1" id="cases_text">select</br>location</div>
         </div>
       </div>
 
       <div class="info-box-big stack-top fill_2" style="left:auto; right:0px;">
         <label class="info-box stack-top">TOTAL CONFIRMED CASES</label>
         <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="total_cases_text">TCCASES</div>
+          <div class="big-text font_1" id="total_cases_text">TOTAL</div>
         </div>
       </div>
 
       <div class="info-box-mid stack-top fill_2">
         <label class="info-box stack-top">COUNTRY / REGION</label>
         <div class="ib-mid-text stack-top fill_1">
-          <div class="mid-text font_2" id="country_text">Name of the country</div>
+          <div class="mid-text font_2" id="country_text">select location</div>
         </div>
       </div>
 
       <div class="info-box-mid stack-top fill_2" style="top:auto; bottom:0px;">
         <label class="info-box stack-top">PROVINCE / STATE</label>
         <div class="ib-mid-text stack-top fill_1">
-          <div class="mid-text font_2" id="province_text">Name of the province</div>
+          <div class="mid-text font_2" id="province_text">select location</div>
         </div>
       </div>
 
@@ -598,7 +598,7 @@
 
   <script>
     // replace console outputs w empty function
-    //console.log = function () { };
+    console.log = function () { };
 /*
     var mymap = L.map('mapid').setView([51.505, -0.09], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -927,7 +927,7 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        eventDISPATCH(selected_date, name[2], x_position, selected_table);
+        eventDISPATCH(undefined, name[2], undefined, undefined);
       }
     }
 
@@ -954,7 +954,7 @@
       if (typeof intersects[0] !== 'undefined') {
         let name = intersects[0].object.name.split("$");
         console.log("intersected : " + name);
-        eventDISPATCH(selected_date, name[2], x_position, selected_table);
+        eventDISPATCH(undefined, name[2], undefined, undefined);
       }
     }
 
