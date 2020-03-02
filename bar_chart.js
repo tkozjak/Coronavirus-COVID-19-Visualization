@@ -372,7 +372,7 @@ function updateConfirmedBarChart(in_data, in_index) {
   con_xScaleLog.domain([0.1, max_value_sel_date])
     .range([0, con_max_bar_width]);
 
-  con_bc_bars.transition().ease(d3.easeLinear).duration(1000)
+  con_bc_bars.transition().ease(d3.easeLinear).duration(2000)
     .attr('width', function (d) {
       if (d[changed_date][0] === 0.0)
         return 3;
@@ -383,7 +383,7 @@ function updateConfirmedBarChart(in_data, in_index) {
     })
 
   // update bar y position according to the rank on the changed day
-  con_bc_groups.transition().ease(d3.easeLinear).duration(1000)
+  con_bc_groups.transition().ease(d3.easeLinear).duration(2000)
     .attr("transform", function (d) {
       let y_pos = con_yScaleLin(d[changed_date][1]);
       return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
@@ -400,7 +400,7 @@ function updateConfirmedBarChart(in_data, in_index) {
 
   // update postions and texts of values  
   con_bc_values
-    .transition().ease(d3.easeLinear).duration(1000)
+    .transition().ease(d3.easeLinear).duration(2000)
     .attr('x', d => con_xScaleLog(d[changed_date][0]) - con_bar_padding * 2)
     .tween("text", function (d) {
       let start = d3.select(this).text();
