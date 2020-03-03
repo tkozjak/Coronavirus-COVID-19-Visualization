@@ -98,6 +98,44 @@
       min-width: 175px;
     }
 
+    div.info-box-big-2 {
+      /*display: inline-block;*/
+      position: absolute;
+      left: 0px;
+
+      bottom: 350px;
+      width: 175px;
+      height: 240px;
+      min-width: 180px;
+    }
+
+    div.ibb2-label {      
+      display : block;
+      margin-top: 2.5%;
+      width: 100%;
+      height: 8%;
+    }
+    div.ibb2-value {      
+      display : block;
+      float: top;      
+      width: 100%;
+      height: 16%;
+    }
+    div.ibb2-value_text {
+      position: relative;
+      text-align: center;
+      width: 100%;
+      top: 50%;
+      transform: translate(0%, -50%);
+    }
+    label.ibb2-label {
+      position: relative;
+      top: 20%;
+      left: 5%;
+      white-space: nowrap;
+    }
+
+
     div.info-box-mid {
       position: absolute;
       left: 185px;
@@ -151,16 +189,18 @@
       bottom: 50px;
       height: 104px;
       overflow: auto;
-      
+
       border-color: rgb(151, 106, 89);
       border-width: 1px;
     }
+
     rect.cal-day {
       fill: rgb(82, 41, 44);
       opacity: 0.9;
       stroke-width: 3px;
       stroke: rgb(139, 102, 37);
     }
+
     rect.cal-day-sel {
       fill: rgb(172, 76, 82);
       opacity: 0.9;
@@ -175,6 +215,7 @@
       height: 100%;
       opacity: 0.9;
     }
+
     svg.fill {
       /*width: 100%;*/
       left: 0px;
@@ -185,12 +226,14 @@
       opacity: 0.9;
       display: none;
     }
+
     .con-country-txt {
       font-size: 12px;
       fill: rgb(255, 255, 255);
       font-family: "Lato";
       font-weight: 300;
     }
+
     .con-province-txt {
       font-size: 12px;
       fill: white;
@@ -198,6 +241,7 @@
       font-weight: 300;
       pointer-events: none;
     }
+
     .con-value-txt {
       font-size: 18px;
       fill: rgb(255, 255, 255);
@@ -353,7 +397,7 @@
       min-height: 75px;
     }
 
-   
+
 
     .stack-top {
       z-index: 9;
@@ -545,6 +589,40 @@
 
     <div class="lower-info-wrap stack-top font_global">
 
+      <div class="info-box-big-2 stack-top">
+
+        <div class="ibb2-label fill_2" style="margin-top:auto;">
+          <label class="ibb2-label">SELECTED LOCATION DATA</label>
+        </div>
+        <div class="ibb2-label fill_2" style="margin-top:auto;">
+          <label class="ibb2-label">TOTALS ON 'date'</label>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">CONFIRMED</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_2">con-val</div>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">DEATHS</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_2">death-val</div>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">RECOVERED</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_2">recover-val</div>
+        </div>
+      </div>
+
       <div class="info-box-big stack-top fill_2">
         <label class="info-box stack-top">CONFIRMED CASES</label>
         <div class="ib-big-text stack-top fill_1">
@@ -577,7 +655,8 @@
 
     </div>
 
-    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px; display: none;" id="mapid"></div>
+    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px; display: none;"
+      id="mapid"></div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
@@ -599,17 +678,17 @@
   <script>
     // replace console outputs w empty function
     console.log = function () { };
-/*
-    var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: 'mapbox/streets-v11',
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken: 'your.mapbox.access.token'
-    }).addTo(mymap);
-*/
+    /*
+        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+          maxZoom: 18,
+          id: 'mapbox/streets-v11',
+          tileSize: 512,
+          zoomOffset: -1,
+          accessToken: 'your.mapbox.access.token'
+        }).addTo(mymap);
+    */
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
     var h = window.innerHeight;
