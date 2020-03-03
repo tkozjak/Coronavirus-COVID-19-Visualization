@@ -8,7 +8,7 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 var covid_confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
 
 // dead
-//var covid_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+//var covid_confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
 
 
 var url = CheckUrl(covid_confirmed_url);
@@ -155,6 +155,8 @@ d3.csv(covid_confirmed_url).then(function (data) {
   // INITIALIZE DATE and TOTAL CASES TO DAY ONE
   data_set = true;
   d3.select("#date_text").html(c19_dates[0]);
+  d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
+  d3.select("#sel_loc_date_text").html("TOTALS  ON  " + c19_dates[0]);
   d3.select("#total_cases_text").html(c19_total_cases[0]);
 
   // CREATE 3D SCENE DATA OBJECTS
@@ -194,13 +196,16 @@ var con_xScaleLog;
 var con_yScaleLin;
 
 // bar chart visual parameters
-var con_l_offset = 150;
+var con_l_offset = 110;
 var con_top_padding = 50;
 var con_bottom_padding = 100;
-var con_max_bar_width = 400;
+var con_max_bar_width = 430;
 var con_bc_height = -1;
 var con_bar_height = 40;
 var con_bar_padding = 2;
+
+var con_transition_v = 1000;
+var con_flip_value = 110;
 
 // text elements
 var con_country_font_size = 12;
@@ -275,12 +280,12 @@ function initConfirmedBarChart(in_data) {
     .attr('class', 'con-country-txt')
     .style('font-size', con_country_font_size + "px")
     //.style( 'fill', "white")
-    .attr('text-anchor', 'start')
+    .attr('text-anchor', 'end')
 
   // ..and append two spans for country names - split in two if name is more than one word
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 - c_offset)
+    .attr('x', -5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 - c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
@@ -289,7 +294,7 @@ function initConfirmedBarChart(in_data) {
 
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 + c_offset)
+    .attr('x', -5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 + c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
@@ -299,13 +304,18 @@ function initConfirmedBarChart(in_data) {
   // create provinces text
   con_bc_provinces = svg_con.selectAll('g').append('text')
     .attr('class', 'con-province-txt')
+    .attr('transform', function (d) {
+      if (con_xScaleLog(d[initial_date][0]) < con_flip_value)
+        return 'translate(' + con_xScaleLog(d[initial_date][0]) + ',0)'; // if bar is not wide enough for porvince text, move text to the right side of the bar
+      return 'translate(0,0)';
+    })
     .style('font-size', con_province_font_size + "px")
-    .attr('text-anchor', 'end')
+    .attr('text-anchor', 'start')
 
   // ...and append two spans for province names - split in two if name is more than one word
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', -p_offset)
+    .attr('x', 5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', -p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
       let ws_c = c_s.split(" ").length - 1
@@ -318,7 +328,7 @@ function initConfirmedBarChart(in_data) {
 
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', +p_offset)
+    .attr('x', 5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', +p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
       let ws_c = c_s.split(" ").length - 1
@@ -372,7 +382,7 @@ function updateConfirmedBarChart(in_data, in_index) {
   con_xScaleLog.domain([0.1, max_value_sel_date])
     .range([0, con_max_bar_width]);
 
-  con_bc_bars.transition().ease(d3.easeLinear).duration(2000)
+  con_bc_bars.transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr('width', function (d) {
       if (d[changed_date][0] === 0.0)
         return 3;
@@ -383,7 +393,7 @@ function updateConfirmedBarChart(in_data, in_index) {
     })
 
   // update bar y position according to the rank on the changed day
-  con_bc_groups.transition().ease(d3.easeLinear).duration(2000)
+  con_bc_groups.transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr("transform", function (d) {
       let y_pos = con_yScaleLin(d[changed_date][1]);
       return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
@@ -398,9 +408,19 @@ function updateConfirmedBarChart(in_data, in_index) {
       return "1";
   })
 
+  // update x postion of province name if the name does not fit in the bar width
+  con_bc_provinces.transition().ease(d3.easeLinear).duration(con_transition_v)
+  .attr('transform', function (d) {
+    let b_width = con_xScaleLog(d[changed_date][0]);
+    if (b_width < con_flip_value)
+      return 'translate(' + b_width + ',0)'; // if bar is not wide enough for porvince text, move text to the right side of the bar
+    return 'translate(0,0)';
+  })
+
+
   // update postions and texts of values  
   con_bc_values
-    .transition().ease(d3.easeLinear).duration(2000)
+    .transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr('x', d => con_xScaleLog(d[changed_date][0]) - con_bar_padding * 2)
     .tween("text", function (d) {
       let start = d3.select(this).text();
@@ -412,110 +432,109 @@ function updateConfirmedBarChart(in_data, in_index) {
 }
 
 
-// SET D3 ELEMENTS and RENDER THEM
-function renderCovidBars(data) {
+// // SET D3 ELEMENTS and RENDER THEM
+// function renderCovidBars(data) {
 
-  // we start with the first date
-  let selected_date = c19_dates[0];
-  let max_value_selected_date = d3.max(data, d => Number(d[selected_date][0]))
+//   // we start with the first date
+//   let selected_date = c19_dates[0];
+//   let max_value_selected_date = d3.max(data, d => Number(d[selected_date][0]))
 
-  svg_height = svg.node().getBoundingClientRect().height;
+//   svg_height = svg.node().getBoundingClientRect().height;
 
-  // logaritmic scale
-  const xScale = d3.scaleLog()
-    .base(Math.E)
-    .clamp(true)
-    .domain([0.1, max_value_selected_date])
-    .range([0, right_margin]);
+//   // logaritmic scale
+//   const xScale = d3.scaleLog()
+//     .base(Math.E)
+//     .clamp(true)
+//     .domain([0.1, max_value_selected_date])
+//     .range([0, right_margin]);
 
-  // linear scale
-  const xLinScale = d3.scaleLinear()
-    .domain([0, max_value_selected_date])
-    .range([0, right_margin]);
+//   // linear scale
+//   const xLinScale = d3.scaleLinear()
+//     .domain([0, max_value_selected_date])
+//     .range([0, right_margin]);
 
-  const yScale = d3.scaleLinear()
-    .domain([c19_number_of_places, 0])
-    .range([top_padding, svg_height - bottom_padding]);
-
-
-  console.log("Domain on xScale: " + xScale.domain());
-  console.log("Domain on yScale: " + yScale.domain());
+//   const yScale = d3.scaleLinear()
+//     .domain([c19_number_of_places, 0])
+//     .range([top_padding, svg_height - bottom_padding]);
 
 
-  all_bars = svg.selectAll('rect')
-    .data(data)
-    .enter().append('rect')
-    .attr('y', d => yScale(d[selected_date][1]))
-    .attr('x', label_margin)
-    .attr('width', function (d) {
-      if (use_log == true)
-        return xScale(d[selected_date][0]);
-      else
-        return xLinScale(d[selected_date][0]);
-    })
-    .attr('height', bar_height - 2)
-    .attr('fill', d => d.colour)
-    .attr('id', (d, i) => "bar_id_" + i)
-    .on("click", function () {
-      let clicked_bar_id = d3.select(this).attr("id").substr(7);
-      console.log("CLICKED BAR: " + clicked_bar_id);
-      eventDISPATCH(undefined, clicked_bar_id, x_position, selected_table);
-    });
-
-  all_countries = svg.selectAll('text.country_label')
-    .data(data)
-    .enter().append('text')
-    .attr('y', function (d) {
-      let offset = 0;
-      if (d["Province/State"] == "")
-        offset = bar_height - country_font_size - 3;
-      else
-        offset = bar_height / 2 - 4;
-      return yScale(d[selected_date][1]) + offset;
-    })
-    .attr('class', 'country_label')
-    .attr('x', label_margin - 2)
-    .attr('text-anchor', 'end')
-    .html(d => (d["Country/Region"] /*+ d[selected_date][1]*/));
+//   console.log("Domain on xScale: " + xScale.domain());
+//   console.log("Domain on yScale: " + yScale.domain());
 
 
-  all_provinces = svg.selectAll('text.province_label')
-    .data(data)
-    .enter().append('text')
-    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + province_font_size)
-    .attr('class', 'province_label')
-    .attr('x', label_margin - 2)
-    .attr('text-anchor', 'end')
-    .html(d => (d["Province/State"] == "" ? "" : d["Province/State"]));
+//   all_bars = svg.selectAll('rect')
+//     .data(data)
+//     .enter().append('rect')
+//     .attr('y', d => yScale(d[selected_date][1]))
+//     .attr('x', label_margin)
+//     .attr('width', function (d) {
+//       if (use_log == true)
+//         return xScale(d[selected_date][0]);
+//       else
+//         return xLinScale(d[selected_date][0]);
+//     })
+//     .attr('height', bar_height - 2)
+//     .attr('fill', d => d.colour)
+//     .attr('id', (d, i) => "bar_id_" + i)
+//     .on("click", function () {
+//       let clicked_bar_id = d3.select(this).attr("id").substr(7);
+//       console.log("CLICKED BAR: " + clicked_bar_id);
+//       eventDISPATCH(undefined, clicked_bar_id, x_position, selected_table);
+//     });
+
+//   all_countries = svg.selectAll('text.country_label')
+//     .data(data)
+//     .enter().append('text')
+//     .attr('y', function (d) {
+//       let offset = 0;
+//       if (d["Province/State"] == "")
+//         offset = bar_height - country_font_size - 3;
+//       else
+//         offset = bar_height / 2 - 4;
+//       return yScale(d[selected_date][1]) + offset;
+//     })
+//     .attr('class', 'country_label')
+//     .attr('x', label_margin - 2)
+//     .attr('text-anchor', 'end')
+//     .html(d => (d["Country/Region"] /*+ d[selected_date][1]*/));
 
 
-  all_values = svg.selectAll('text.value_text')
-    .data(data)
-    .enter().append('text')
-    .attr('x', function (d) {
-      if (use_log == true)
-        return xScale(d[selected_date][0]) + label_margin - 2;
-      else
-        return xLinScale(d[selected_date][0]) + label_margin - 2;
-    })
-    .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 6)
-    .attr('class', 'bar_label')
-    .attr('text-anchor', 'end')
-    //.html(d => d[selected_date][0]);
-    .html(function (d) {
-      let c_value = d[selected_date][0];
-      if (c_value == 0)
-        return "";
-      else
-        return c_value;
-    })
+//   all_provinces = svg.selectAll('text.province_label')
+//     .data(data)
+//     .enter().append('text')
+//     .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + province_font_size)
+//     .attr('class', 'province_label')
+//     .attr('x', label_margin - 2)
+//     .attr('text-anchor', 'end')
+//     .html(d => (d["Province/State"] == "" ? "" : d["Province/State"]));
 
 
-}
+//   all_values = svg.selectAll('text.value_text')
+//     .data(data)
+//     .enter().append('text')
+//     .attr('x', function (d) {
+//       if (use_log == true)
+//         return xScale(d[selected_date][0]) + label_margin - 2;
+//       else
+//         return xLinScale(d[selected_date][0]) + label_margin - 2;
+//     })
+//     .attr('y', d => (yScale(d[selected_date][1])) + bar_height / 2 + 6)
+//     .attr('class', 'bar_label')
+//     .attr('text-anchor', 'end')
+//     //.html(d => d[selected_date][0]);
+//     .html(function (d) {
+//       let c_value = d[selected_date][0];
+//       if (c_value == 0)
+//         return "";
+//       else
+//         return c_value;
+//     })
+
+
+// }
 
 var calendar_day_cell_w = 40;
 var calendar_day_cell_h = 40;
-
 var all_cal_dates;
 
 // CREATE CALENDAR ELEMENTS
@@ -624,71 +643,71 @@ function createCalendarSlider(dates_array) {
 }
 
 
-// CHANGE THE DATE - UPDATE D3 ELEMENTS BASED ON THE SLIDER VALUE
-function changeDate(data, index) {
+// // CHANGE THE DATE - UPDATE D3 ELEMENTS BASED ON THE SLIDER VALUE
+// function changeDate(data, index) {
 
-  // change total cases
-  d3.select("#total_cases_text").html(c19_total_cases[index]);
+//   // change total cases
+//   d3.select("#total_cases_text").html(c19_total_cases[index]);
 
-  let selected_date = c19_dates[index];
-  svg_height = svg.node().getBoundingClientRect().height;
+//   let selected_date = c19_dates[index];
+//   svg_height = svg.node().getBoundingClientRect().height;
 
-  //update ui elements
-  d3.select("#date_text").html(selected_date);
+//   //update ui elements
+//   d3.select("#date_text").html(selected_date);
 
-  // UPDATE 3D SCENE DATA OBJECTS
-  SCENE_3D_updateDataPoints(sorted_data, selected_date);
+//   // UPDATE 3D SCENE DATA OBJECTS
+//   SCENE_3D_updateDataPoints(sorted_data, selected_date);
 
-  let max_value_selected_date = d3.max(data, d => Number(d[selected_date][0]))
+//   let max_value_selected_date = d3.max(data, d => Number(d[selected_date][0]))
 
-  const xScale = d3.scaleLog()
-    .base(Math.E)
-    .clamp(true)
-    .domain([0.1, max_value_selected_date])
-    .range([0, right_margin]);
+//   const xScale = d3.scaleLog()
+//     .base(Math.E)
+//     .clamp(true)
+//     .domain([0.1, max_value_selected_date])
+//     .range([0, right_margin]);
 
-  const xLinScale = d3.scaleLinear()
-    .domain([0, max_value_selected_date])
-    .range([0, right_margin]);
+//   const xLinScale = d3.scaleLinear()
+//     .domain([0, max_value_selected_date])
+//     .range([0, right_margin]);
 
-  const yScale = d3.scaleLinear()
-    .domain([c19_number_of_places, 0])
-    .range([top_padding, svg_height - bottom_padding]);
+//   const yScale = d3.scaleLinear()
+//     .domain([c19_number_of_places, 0])
+//     .range([top_padding, svg_height - bottom_padding]);
 
-  all_bars.transition().ease(d3.easeLinear).duration(1000)
-    .attr('width', function (d) {
-      if (use_log == true)
-        return xScale(d[selected_date][0]);
-      else
-        return xLinScale(d[selected_date][0]);
-    })
-    .attr('y', d => yScale(d[selected_date][1]))
+//   all_bars.transition().ease(d3.easeLinear).duration(1000)
+//     .attr('width', function (d) {
+//       if (use_log == true)
+//         return xScale(d[selected_date][0]);
+//       else
+//         return xLinScale(d[selected_date][0]);
+//     })
+//     .attr('y', d => yScale(d[selected_date][1]))
 
-  all_countries.html(d => d["Country/Region"]/* + d[selected_date][1]*/)
-    .transition().ease(d3.easeLinear).duration(1000)
-    .attr('y', function (d) {
-      let offset = 0;
-      if (d["Province/State"] == "")
-        offset = bar_height - country_font_size - 3;
-      else
-        offset = bar_height / 2 - 4;
-      return yScale(d[selected_date][1]) + offset;
-    })
+//   all_countries.html(d => d["Country/Region"]/* + d[selected_date][1]*/)
+//     .transition().ease(d3.easeLinear).duration(1000)
+//     .attr('y', function (d) {
+//       let offset = 0;
+//       if (d["Province/State"] == "")
+//         offset = bar_height - country_font_size - 3;
+//       else
+//         offset = bar_height / 2 - 4;
+//       return yScale(d[selected_date][1]) + offset;
+//     })
 
-  all_provinces.html(d => d["Province/State"] == " ... " ? d["Country/Region"] : d["Province/State"])
-    .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size));
+//   all_provinces.html(d => d["Province/State"] == " ... " ? d["Country/Region"] : d["Province/State"])
+//     .transition().ease(d3.easeLinear).duration(1000).attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + province_font_size));
 
-  all_values.html(function (d) {
-    let c_value = d[selected_date][0];
-    if (c_value === 0)
-      return "";
-    else
-      return c_value;
-  })
-    .transition().ease(d3.easeLinear).duration(1000)
-    .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
-    .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
-}
+//   all_values.html(function (d) {
+//     let c_value = d[selected_date][0];
+//     if (c_value === 0)
+//       return "";
+//     else
+//       return c_value;
+//   })
+//     .transition().ease(d3.easeLinear).duration(1000)
+//     .attr('y', d => (yScale(d[selected_date][1]) + bar_height / 2 + 4))
+//     .attr('x', d => (xScale(d[selected_date][0])) + label_margin - 2);
+// }
 
 
 // GLOBAL SELECTIONS
@@ -725,6 +744,8 @@ function markSelectedCalendarDate(x_pos) {
 
 function changeGlobalDate(date) {
   d3.select("#date_text").html(date);
+  d3.select("#glob_date_text").html("TOTALS  ON  " + date);
+  d3.select("#sel_loc_date_text").html("TOTALS  ON  " + date);
   SCENE_3D_updateDataPoints(sorted_data, date)
 }
 

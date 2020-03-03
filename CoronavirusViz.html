@@ -73,9 +73,13 @@
     div.font_1 {
       font-size: 30px;
     }
-
+    
     div.font_2 {
       font-size: 20px;
+    }
+
+    div.font_3 {
+      font-size: 25px;
     }
 
     div.lower-info-wrap {
@@ -102,16 +106,26 @@
       /*display: inline-block;*/
       position: absolute;
       left: 0px;
-
-      bottom: 350px;
+      bottom: -15px;
       width: 175px;
-      height: 240px;
-      min-width: 180px;
+      height: 300px;
+      min-width: 200px;
+    }
+    
+    div.info-box-big-2-g {
+      /*display: inline-block;*/
+      position: absolute;
+      right: 10px;
+
+      top: 10px;
+      width: 175px;
+      height: 300px;
+      min-width: 200px;
     }
 
     div.ibb2-label {      
       display : block;
-      margin-top: 2.5%;
+      margin-top: 2%;
       width: 100%;
       height: 8%;
     }
@@ -119,7 +133,7 @@
       display : block;
       float: top;      
       width: 100%;
-      height: 16%;
+      height: 17%;
     }
     div.ibb2-value_text {
       position: relative;
@@ -130,7 +144,7 @@
     }
     label.ibb2-label {
       position: relative;
-      top: 20%;
+      top: 25%;
       left: 5%;
       white-space: nowrap;
     }
@@ -138,7 +152,7 @@
 
     div.info-box-mid {
       position: absolute;
-      left: 185px;
+      left: 210px;
       height: calc(50% - 5px);
       width: 450px;
       min-width: 450px;
@@ -584,9 +598,45 @@
       <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
 
-
     <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
+    
+    <!-- GLOBAL CASES-->
+    <div class="info-box-big-2-g stack-top font_global">
 
+      <div class="ibb2-label fill_2" style="margin-top:auto;">
+        <label class="ibb2-label">GLOBAL DATA</label>
+      </div>
+      <div class="ibb2-label fill_2" style="margin-top:auto;">
+        <label class="ibb2-label" id="glob_date_text">TOTALS  ON  'date'</label>
+      </div>
+
+      <div class="ibb2-label fill_2">
+        <label class="ibb2-label">CONFIRMED</label>
+      </div>
+
+      <div class="ibb2-value fill_1">
+        <div class="ibb2-value_text font_3" id="total_cases_text" >...</div>
+      </div>
+
+      <div class="ibb2-label fill_2">
+        <label class="ibb2-label">DEATHS</label>
+      </div>
+
+      <div class="ibb2-value fill_1">
+        <div class="ibb2-value_text font_3">...</div>
+      </div>
+
+      <div class="ibb2-label fill_2">
+        <label class="ibb2-label">RECOVERED</label>
+      </div>
+
+      <div class="ibb2-value fill_1">
+        <div class="ibb2-value_text font_3">...</div>
+      </div>
+    </div>
+
+
+    <!-- SELECTED LOCATION CASES-->
     <div class="lower-info-wrap stack-top font_global">
 
       <div class="info-box-big-2 stack-top">
@@ -595,7 +645,7 @@
           <label class="ibb2-label">SELECTED LOCATION DATA</label>
         </div>
         <div class="ibb2-label fill_2" style="margin-top:auto;">
-          <label class="ibb2-label">TOTALS ON 'date'</label>
+          <label class="ibb2-label" id="sel_loc_date_text">TOTALS  ON  'date'</label>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -603,7 +653,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_2">con-val</div>
+          <div class="ibb2-value_text font_3"id="cases_text" >...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -611,7 +661,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_2">death-val</div>
+          <div class="ibb2-value_text font_3">...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -619,35 +669,35 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_2">recover-val</div>
+          <div class="ibb2-value_text font_3">...</div>
         </div>
       </div>
 
-      <div class="info-box-big stack-top fill_2">
+      <!-- <div class="info-box-big stack-top fill_2">
         <label class="info-box stack-top">CONFIRMED CASES</label>
         <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="cases_text">select</br>location</div>
+          <div class="big-text font_1" id="__cases_text">select</br>location</div>
         </div>
-      </div>
+      </div> -->
 
-      <div class="info-box-big stack-top fill_2" style="left:auto; right:0px;">
+      <!-- <div class="info-box-big stack-top fill_2" style="left:auto; right:0px;">
         <label class="info-box stack-top">TOTAL CONFIRMED CASES</label>
         <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="total_cases_text">TOTAL</div>
+          <div class="big-text font_1" id="__total_cases_text">TOTAL</div>
         </div>
-      </div>
+      </div> -->
 
       <div class="info-box-mid stack-top fill_2">
         <label class="info-box stack-top">COUNTRY / REGION</label>
         <div class="ib-mid-text stack-top fill_1">
-          <div class="mid-text font_2" id="country_text">select location</div>
+          <div class="mid-text font_2" id="country_text">select location...</div>
         </div>
       </div>
 
       <div class="info-box-mid stack-top fill_2" style="top:auto; bottom:0px;">
         <label class="info-box stack-top">PROVINCE / STATE</label>
         <div class="ib-mid-text stack-top fill_1">
-          <div class="mid-text font_2" id="province_text">select location</div>
+          <div class="mid-text font_2" id="province_text">...by clicking on a bar or a globe data point</div>
         </div>
       </div>
 
