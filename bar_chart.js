@@ -10,9 +10,10 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 // JOHNS HOPKINS REPO
 // confirmed
 var covid_confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv";
-
-// dead
-//var covid_confirmed_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+// deaths
+var covid_deaths_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Deaths.csv";
+// recovered
+var covid_recovered_url = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Recovered.csv";
 
 
 //
@@ -43,53 +44,44 @@ function CheckUrl(url) {
 
 
 
-// SELECT SVG ELEMENT
+// SELECT BAR CHART SVG ELEMENT
 var svg = d3.select("#bar_chart_container");
 var svg_width = svg.node().getBoundingClientRect().width;
 var svg_height = svg.node().getBoundingClientRect().height;
+
 
 // SELECT DIV EL. THAT HOLDS SVG EL.
 var svg_div = d3.select("#side_box_div");
 console.log("SVG. Width: " + svg_width);
 console.log("SVG. Width: " + svg_height);
 
-// CALENDAR SVG ELEMENTS
+
+// CALENDAR SVG ELEMENTS and DATA
 var cal_svg = d3.select("#calendar-svg");
 var selected_date_marker;
 
 
-// D3 elements
-var all_bars;
-var all_labels;
-var all_values;
-var all_countries;
-var all_provinces;
-
 // COVID-19 DATA
-var c19_dates = [];
-var c19_number_of_dates = -1;
-var c19_number_of_places = -1;
-var c19_total_cases = [];
+var c19_dates = [];             // dates - in m/d/y format - dates are also the keys 
+var c19_number_of_dates = -1;   // total number of recorded dates  
+var c19_number_of_places = -1;  // total number of tracked locations
 
-var year = -1;
-var month = -1;
-var date_objects = [];
+var c19_total_cases = [];       // total number of confirmed cases on specific date
+var c19_total_deaths = [];      // total number of deaths on specific date
+var c19_total_recovered = [];   // total number of recoverd cases on specific date
+
+var c19_total_locations = [];   // total number of affected locations on specific date ( NOT IMPLEMENTED YET )
+
 
 // D3 DATA OBJECT (array of objects)
-var notsorted_data;
-var sorted_data;
+var sorted_data;              // an array of confirmed cases objects
+var sorted_deaths_data;       // an array of deaths objects
+var sorted_recovered_data;    // an array of recovered objects
+
+var sorted_combined_data;
+
 var data_set = false;
-var use_log = true;
-
-// SVG dimensions
-var label_margin = 170;
-var right_margin = 375;
-var bar_height = 36;
-var top_padding = 0;
-var bottom_padding = 60;
-
-var country_font_size = 12;
-var province_font_size = 12;
+var use_log = true;     // we use log scale ( LINEAR SCALE IS NOT FULLY IMPLEMENTED )
 
 
 //
@@ -97,95 +89,119 @@ var province_font_size = 12;
 //
 
 d3.csv(covid_confirmed_url).then(function (data) {
+  d3.csv(covid_deaths_url).then(function (data_deaths) {
+    d3.csv(covid_recovered_url).then(function (data_recovered) {
 
-  console.log("COVID-19. First row: ");
-  console.log(data[0]);
+      console.log("COVID-19. First row: ");
+      console.log(data[0]);
 
-  // check the number of the dates
-  // data array has objects, so we count keys
-  var num_columns = Object.keys(data[0]).length;
+      // check the number of the dates
+      // data array has objects, so we count keys
+      var num_columns = Object.keys(data[0]).length;
 
-  console.log("COVID-19. Number of columns: " + num_columns);
-  console.log("COVID-19. Object keys: " + Object.keys(data[0]));
+      console.log("COVID-19. Number of columns: " + num_columns);
+      console.log("COVID-19. Object keys: " + Object.keys(data[0]));
 
-  // fill dates keys
-  for (var i = 4; i < Object.keys(data[0]).length; i++) {
-    c19_dates[i - 4] = Object.keys(data[0])[i];
-  }
+      // fill dates keys
+      for (var i = 4; i < Object.keys(data[0]).length; i++) {
+        c19_dates[i - 4] = Object.keys(data[0])[i];
+      }
 
-  c19_number_of_dates = c19_dates.length;
-  c19_number_of_places = data.length;
+      c19_number_of_dates = c19_dates.length;
+      c19_number_of_places = data.length;
 
-  svg_height = top_padding + c19_number_of_places * bar_height + bottom_padding;
-  svg_div.select('svg').style('height', String(svg_height) + "px");
+      console.log("COVID-19. Recorded dates: " + c19_dates);
+      console.log("COVID-19. Number of dates: " + c19_number_of_dates);
 
-  console.log("COVID-19. Recorded dates: " + c19_dates);
-  console.log("COVID-19. Number of dates: " + c19_number_of_dates);
-
-  // iterate over each data item (row) in the data array
-  // transform some data into numerical values
-  // add color to data items
-  data.forEach(d => {
-    d.Lat = +d.Lat,
-      d.Long = +d.Long,
-      d.colour = d3.hsl(Math.random() * 360, 0.65, 0.45)
-  });
-
-
-  // iterate over each recorded date
-  // sort data items based on the value in the date column
-  // assign the rank to each value
-  // calculate total cases for that date
-  for (var i = 0; i < c19_number_of_dates; i++) {
-
-    let date_key = c19_dates[i];
-
-    //transform recorded values to numbers
-    data.forEach(item => item[date_key] = Number(item[date_key]));
-
-    sorted_data = data.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
-
-    sorted_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
-
-    //total cases
-    let total_cases = 0;
-    sorted_data.forEach((d, i) => (total_cases += d[date_key][0]));
-    c19_total_cases[i] = total_cases;
-
-    console.log("COVID-19. Ranked data item " + i + ", " + date_key + "  : ");
-    console.log(data[i]);
-    console.log("Total cases on " + date_key + " : " + c19_total_cases[i]);
-  }
+      // iterate over each data item (row) in the data array
+      // transform some data into numerical values
+      // add color to data items
+      data.forEach(d => {
+        d.Lat = +d.Lat,
+          d.Long = +d.Long,
+          d.colour = d3.hsl(Math.random() * 360, 0.65, 0.45) // TO-DO: MAKE BETTER COLOR SCHEME
+      });
 
 
-  // INITIALIZE DATE and TOTAL CASES TO DAY ONE
-  data_set = true;
-  d3.select("#date_text").html(c19_dates[0]);
-  d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
-  d3.select("#sel_loc_date_text").html("TOTALS  ON  " + c19_dates[0]);
-  d3.select("#total_cases_text").html(c19_total_cases[0]);
+      // iterate over each date and sort data items based on the value in the date column
+      // assign the rank to each value - and put it in the tuple: [ value, rank ]
+      // calculate total numer of cases across locations for that date
+      for (var i = 0; i < c19_number_of_dates; i++) {
 
-  // CREATE 3D SCENE DATA OBJECTS
-  SCENE_3D_addDataPoints(sorted_data, c19_dates[0]);
+        let date_key = c19_dates[i];
 
-  // SET SLIDER LISTENER (DEPRECATED)
-  d3.select("#mySlider")
-    .property('value', "0")
-    .attr('max', c19_number_of_dates - 1)
-    .on("input", function (d) {
-      selectedValue = this.value
-    })
+        //transform recorded values to numbers
+        data.forEach(item => item[date_key] = Number(item[date_key]));
+        data_deaths.forEach(item => item[date_key] = Number(item[date_key]));
+        data_recovered.forEach(item => item[date_key] = Number(item[date_key]));
 
-  // INITIAL RENDER - CREATE D3 BAR CHART
-  // renderCovidBars(sorted_data);
+        // sort confirmed first and assign rank
+        sorted_data = data.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
+        sorted_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
 
-  // TEMP NEW
-  initConfirmedBarChart(sorted_data);
+        // sort deaths
+        sorted_deaths_data = data_deaths.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
+        sorted_deaths_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
+        //sorted_deaths_data.forEach( (d, i) => console.log( d[date_key] ) );
 
-  // INITIAL RENDER - CREATE CALENDAR ELEMENTS
-  createCalendarSlider(c19_dates);
+        // sort recovered
+        sorted_recovered_data = data_recovered.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
+        sorted_recovered_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
 
-}); // endif csv load success
+
+        // calculate total confirmed cases for specific date
+        let total_cases = 0;
+        sorted_data.forEach((d, i) => (total_cases += d[date_key][0]));
+        c19_total_cases[i] = total_cases;
+
+        // calculate total confirmed deaths for specific date
+        let total_deaths = 0;
+        sorted_deaths_data.forEach((d, i) => (total_deaths += d[date_key][0]));
+        c19_total_deaths[i] = total_deaths;
+
+        // calculate total recovered cases for specific date
+        let total_recovered = 0;
+        sorted_recovered_data.forEach((d, i) => (total_recovered += d[date_key][0]));
+        c19_total_recovered[i] = total_recovered;
+
+        console.log("COVID-19. Ranked data item " + i + ", " + date_key + "  : ");
+        console.log(data[i]);
+        console.log("Total cases on " + date_key + " : " + c19_total_cases[i]);
+      }
+
+      // combine all sorted tables into one
+      sorted_combined_data = [...sorted_data];
+      for (var i = 0; i < c19_number_of_dates; i++){
+
+        let date_key = c19_dates[i];
+        console.log("COMBINED DATA ITEM, date_key : " + date_key);
+        sorted_combined_data.forEach( (item,index)=>{
+          item[date_key] = item[date_key].concat( sorted_deaths_data[index][date_key], sorted_recovered_data[index][date_key] );
+        });
+      }
+
+      // INITIALIZE DATE and TOTAL CASES TO DAY ONE
+      data_set = true;
+      d3.select("#date_text").html(c19_dates[0]);
+      d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
+      d3.select("#sel_loc_date_text").html("TOTALS  ON  " + c19_dates[0]);
+
+      d3.select("#total_cases_text").html(c19_total_cases[0]);
+      d3.select("#total_deaths_text").html(c19_total_deaths[0]);
+      d3.select("#total_recovered_text").html(c19_total_recovered[0]);
+
+      // CREATE 3D SCENE DATA OBJECTS
+      SCENE_3D_addDataPoints(sorted_combined_data, c19_dates[0]);
+
+      // INITIALIZE CONFIRMED CASES BAR CHART
+      initConfirmedBarChart(sorted_combined_data);
+
+      // INITIALIZE CALENDAR AND ITS ELEMENTS
+      createCalendarSlider(c19_dates);
+
+    });   // endif csv recovered load success
+  });     // endif csv deaths load success
+});       // endif csv confirmed load success
 
 
 //
@@ -193,13 +209,13 @@ d3.csv(covid_confirmed_url).then(function (data) {
 //
 
 // d3 visual elements (svg elements)
-var svg_con; // svg container for svg elements (confirmed cases)
+var svg_con;                               // svg container for svg elements
 svg_con = d3.select("#svg_con_element");
-var con_bc_groups; // array of group svg elements that hold (confirmed cases) bar chart elements
-var con_bc_bars;
-var con_bc_values; // array of svg text elements that are confirmed cases values
-var con_bc_countries; // array of svg text elements that are names of countries
-var con_bc_provinces; // array of svg text elements that are names of provinces
+var con_bc_groups;                         // svg group elements that hold bars and text elements
+var con_bc_bars;                           // svg rect elements that represent bars
+var con_bc_values;                         // svg text elements - cases values
+var con_bc_countries;                      // svg text elements - countries
+var con_bc_provinces;                      // text elements - provinces
 
 // d3 non-visual elements
 var con_xScaleLog;
@@ -214,8 +230,8 @@ var con_bc_height = -1;
 var con_bar_height = 40;
 var con_bar_padding = 2;
 
-var con_transition_v = 1000;
-var con_flip_value = 110;
+var con_transition_v = 1000; // transition time
+var con_flip_value = 110;  // bar width treshold that drives the placement of province name
 
 // text elements
 var con_country_font_size = 12;
@@ -386,36 +402,54 @@ function initConfirmedBarChart(in_data) {
 //  UPDATE BARS WHEN DATE CHANGES
 //
 
-function updateConfirmedBarChart(in_data, in_index) {
+function updateConfirmedBarChart(in_data, in_index, in_table) {
 
   let changed_date = c19_dates[in_index];
 
+  console.log("TABLE: " + in_table)
+
+  let rank_index = in_table*2 + 1;
+  let value_index = in_table*2; 
+
   let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
+  let max_deaths_value_del_date = d3.max(in_data, d => Number(d[changed_date][2]))
+  let max_recovered_value_del_date = d3.max(in_data, d => Number(d[changed_date][4]))
+
 
   // update scales according to the biggest value on the changed day
-  con_xScaleLog.domain([0.1, max_value_sel_date])
-    .range([0, con_max_bar_width]);
+  switch (in_table) {
+    case 0: {
+      con_xScaleLog.domain([0.1, max_value_sel_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+    case 1: {
+      con_xScaleLog.domain([0.1, max_deaths_value_del_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+  }
 
   con_bc_bars.transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr('width', function (d) {
-      if (d[changed_date][0] === 0.0)
+      if (d[changed_date][value_index] === 0.0)
         return 3;
       if (use_log == true)
-        return con_xScaleLog(d[changed_date][0]);
+        return con_xScaleLog(d[changed_date][value_index]);
       else
-        return con_xScaleLog(d[changed_date][0]);
+        return con_xScaleLog(d[changed_date][value_index]);
     })
 
   // update bar y position according to the rank on the changed day
   con_bc_groups.transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr("transform", function (d) {
-      let y_pos = con_yScaleLin(d[changed_date][1]);
+      let y_pos = con_yScaleLin(d[changed_date][rank_index]);
       return "translate(" + String(con_l_offset) + "," + String(y_pos) + ")";
     })
 
   // don't display text if value is zero
   con_bc_values.style("opacity", function (d) {
-    let c_value = d[changed_date][0];
+    let c_value = d[changed_date][value_index];
     if (c_value < 1.0)
       return "0";
     else
@@ -424,21 +458,21 @@ function updateConfirmedBarChart(in_data, in_index) {
 
   // update x postion of province name if the name does not fit in the bar width
   con_bc_provinces.transition().ease(d3.easeLinear).duration(con_transition_v)
-  .attr('transform', function (d) {
-    let b_width = con_xScaleLog(d[changed_date][0]);
-    if (b_width < con_flip_value)
-      return 'translate(' + b_width + ',0)'; // if bar is not wide enough for porvince text, move text to the right side of the bar
-    return 'translate(0,0)';
-  })
+    .attr('transform', function (d) {
+      let b_width = con_xScaleLog(d[changed_date][value_index]);
+      if (b_width < con_flip_value)
+        return 'translate(' + b_width + ',0)'; // if bar is not wide enough for porvince text, move text to the right side of the bar
+      return 'translate(0,0)';
+    })
 
 
   // update postions and texts of values  
   con_bc_values
     .transition().ease(d3.easeLinear).duration(con_transition_v)
-    .attr('x', d => con_xScaleLog(d[changed_date][0]) - con_bar_padding * 2)
+    .attr('x', d => con_xScaleLog(d[changed_date][value_index]) - con_bar_padding * 2)
     .tween("text", function (d) {
       let start = d3.select(this).text();
-      let end = d[changed_date][0];
+      let end = d[changed_date][value_index];
 
       var interpolator = d3.interpolateNumber(start, end); // d3 interpolator
       return function (t) { d3.select(this).text(Math.round(interpolator(t))) };
@@ -524,7 +558,7 @@ function createCalendarSlider(dates_array) {
         d3.select(this)
           .attr('class', 'cal-day')
       })
-      .on( "click", function () {
+      .on("click", function () {
         let clicked_id = d3.select(this).attr("id").substr(4); //date
         let parent_xpos = d3.select(this.parentNode).attr('transform').split("(")[1].split(",")[0]; //marker postion
 
@@ -562,7 +596,7 @@ function createCalendarSlider(dates_array) {
 var selected_place_index = -1;  // no selected places initally
 var selected_date = "1/22/20";  //initial value
 var x_position = 0;             //initial value
-var selected_table = 0;         //confirmed table
+var selected_table = 0.0;         //confirmed table
 
 // event dipatch function
 function eventDISPATCH(in_date, in_index, in_x_pos, in_table) {
@@ -579,10 +613,15 @@ function eventDISPATCH(in_date, in_index, in_x_pos, in_table) {
 
   changeGlobalDate(selected_date);
   markSelectedCalendarDate(x_position);
+
   changeClickedCountryProvince(selected_place_index, selected_date);
 
-  updateConfirmedBarChart(sorted_data, c19_dates.indexOf(selected_date));
+  updateConfirmedBarChart(sorted_combined_data, c19_dates.indexOf(selected_date), selected_table);
+
+  // global data
   d3.select("#total_cases_text").html(c19_total_cases[c19_dates.indexOf(selected_date)]);
+  d3.select("#total_deaths_text").html(c19_total_deaths[c19_dates.indexOf(selected_date)]);
+  d3.select("#total_recovered_text").html(c19_total_recovered[c19_dates.indexOf(selected_date)]);
 }
 
 function markSelectedCalendarDate(x_pos) {
@@ -593,7 +632,8 @@ function changeGlobalDate(date) {
   d3.select("#date_text").html(date);
   d3.select("#glob_date_text").html("TOTALS  ON  " + date);
   d3.select("#sel_loc_date_text").html("TOTALS  ON  " + date);
-  SCENE_3D_updateDataPoints(sorted_data, date)
+
+  SCENE_3D_updateDataPoints(sorted_combined_data, date, selected_table); // TO-DO: implement this better
 }
 
 function changeClickedCountryProvince(index, date) {
@@ -601,13 +641,19 @@ function changeClickedCountryProvince(index, date) {
     return;
   let selected_country = sorted_data[index]["Country/Region"];
   let selected_province = sorted_data[index]["Province/State"];
+
   let selected_cases = sorted_data[index][date][0];
+  let selected_deaths = sorted_deaths_data[index][date][0];
+  let selected_recovered = sorted_recovered_data[index][date][0];
 
   d3.select("#country_text").html(selected_country);
   d3.select("#province_text").html(selected_province);
-  d3.select("#cases_text").html(selected_cases);
 
-  SCENE_3D_UPDATE_SELECTION_RING(sorted_data, index);
+  d3.select("#cases_text").html(selected_cases);
+  d3.select("#deaths_text").html(selected_deaths);
+  d3.select("#recovered_text").html(selected_recovered);
+
+  SCENE_3D_UPDATE_SELECTION_RING(sorted_combined_data, index);
 }
 
 //
@@ -618,15 +664,25 @@ function changeClickedCountryProvince(index, date) {
 document.addEventListener('keydown', logKey);
 
 function logKey(e) {
-  let date_index = c19_dates.indexOf(selected_date);
+  //let date_index = c19_dates.indexOf(selected_date);
 
-  if (e.code === "ArrowRight")
-    date_index != (c19_number_of_dates - 1) ? date_index++ : date_index = dateindex;
+  if (e.code === "ArrowRight") {
+    let date_index = c19_dates.indexOf(selected_date);
+    date_index != (c19_number_of_dates - 1) ? ++date_index : date_index = date_index;
+    let new_selected_date = c19_dates[date_index];
+    eventDISPATCH(new_selected_date, undefined, (date_index * calendar_day_cell_w), undefined)
+  }
 
-  if (e.code === "ArrowLeft")
-    date_index != 0 ? date_index-- : date_index = date_index = dateindex;
 
-  let new_selected_date = c19_dates[date_index];
+  if (e.code === "ArrowLeft") {
+    let date_index = c19_dates.indexOf(selected_date);
+    date_index != 0 ? --date_index : date_index = date_index = date_index;
+    let new_selected_date = c19_dates[date_index];
+    eventDISPATCH(new_selected_date, undefined, (date_index * calendar_day_cell_w), undefined)
+  }
 
-  eventDISPATCH(new_selected_date, selected_place_index, (date_index * calendar_day_cell_w), selected_table)
+  if (e.code === "ArrowUp") {
+    let new_selected_table = (++selected_table) % 3;
+    eventDISPATCH(undefined, undefined, undefined, new_selected_table)
+  }
 }

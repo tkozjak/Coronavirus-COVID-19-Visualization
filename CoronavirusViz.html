@@ -619,11 +619,11 @@
       </div>
 
       <div class="ibb2-label fill_2">
-        <label class="ibb2-label">DEATHS</label>
+        <label class="ibb2-label" >DEATHS</label>
       </div>
 
       <div class="ibb2-value fill_1">
-        <div class="ibb2-value_text font_3">...</div>
+        <div class="ibb2-value_text font_3" id="total_deaths_text" >...</div>
       </div>
 
       <div class="ibb2-label fill_2">
@@ -631,7 +631,7 @@
       </div>
 
       <div class="ibb2-value fill_1">
-        <div class="ibb2-value_text font_3">...</div>
+        <div class="ibb2-value_text font_3" id="total_recovered_text" >...</div>
       </div>
     </div>
 
@@ -653,7 +653,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3"id="cases_text" >...</div>
+          <div class="ibb2-value_text font_3" id="cases_text" >...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -661,7 +661,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3">...</div>
+          <div class="ibb2-value_text font_3"  id="deaths_text" >...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -669,7 +669,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3">...</div>
+          <div class="ibb2-value_text font_3"  id="recovered_text" >...</div>
         </div>
       </div>
 
@@ -728,6 +728,7 @@
   <script>
     // replace console outputs w empty function
     console.log = function () { };
+
     /*
         var mymap = L.map('mapid').setView([51.505, -0.09], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -978,11 +979,14 @@
       console.log("Selected Long: " + selected_Long);
     }
 
-    function SCENE_3D_updateDataPoints(sorted_data, key) {
+    function SCENE_3D_updateDataPoints(sorted_data, key, in_table_index) {
+
+      let value_index = in_table_index * 2; 
+
       data_points_pos_array.forEach((d, i) => {
 
         let value_rank_tuple = sorted_data[i][key];
-        let confirmed_value = value_rank_tuple[0];
+        let confirmed_value = value_rank_tuple[value_index];
 
         var scale = Math.log(confirmed_value + 0.1);
         scale *= factor;
@@ -990,7 +994,7 @@
         let color = colorScale_2(confirmed_value);
         console.log(color);
 
-        if (value_rank_tuple[0] == 0.0)
+        if (value_rank_tuple[value_index] == 0.0)
           d.visible = false;
         else
           d.visible = true;
