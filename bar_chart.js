@@ -706,6 +706,9 @@ function changeClickedCountryProvince(index, date) {
 // arrow keys event listener
 document.addEventListener('keydown', logKey);
 
+var dataset_name = ["TOTAL CONFIRMED", "TOTAL DEATHS", "TOTAL RECOVERED", "DAILY CONFIRMED", "DAILY DEATHS"];
+d3.select("#temp-info-text").text(dataset_name[0]);
+
 function logKey(e) {
   //let date_index = c19_dates.indexOf(selected_date);
 
@@ -726,6 +729,9 @@ function logKey(e) {
 
   if (e.code === "ArrowUp") {
     let new_selected_table = (++selected_table) % 5;
+
+    d3.select("#temp-info-text").text(dataset_name[new_selected_table]);
+
     eventDISPATCH(undefined, undefined, undefined, new_selected_table)
-  }
+  }  
 }

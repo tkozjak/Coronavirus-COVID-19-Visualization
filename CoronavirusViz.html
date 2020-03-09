@@ -73,7 +73,7 @@
     div.font_1 {
       font-size: 30px;
     }
-    
+
     div.font_2 {
       font-size: 20px;
     }
@@ -111,7 +111,7 @@
       height: 300px;
       min-width: 200px;
     }
-    
+
     div.info-box-big-2-g {
       /*display: inline-block;*/
       position: absolute;
@@ -123,18 +123,20 @@
       min-width: 200px;
     }
 
-    div.ibb2-label {      
-      display : block;
+    div.ibb2-label {
+      display: block;
       margin-top: 2%;
       width: 100%;
       height: 8%;
     }
-    div.ibb2-value {      
-      display : block;
-      float: top;      
+
+    div.ibb2-value {
+      display: block;
+      float: top;
       width: 100%;
       height: 17%;
     }
+
     div.ibb2-value_text {
       position: relative;
       text-align: center;
@@ -142,6 +144,7 @@
       top: 50%;
       transform: translate(0%, -50%);
     }
+
     label.ibb2-label {
       position: relative;
       top: 25%;
@@ -263,6 +266,14 @@
       font-weight: 300;
     }
 
+    /* TEMP */
+    div.temp-info {
+      position: absolute;
+      left: 620px;
+      top: 10px;
+      width: 300px;
+      height: 100px;
+    }
 
 
     div.wrapper {
@@ -599,7 +610,11 @@
     </div>
 
     <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
-    
+
+    <div class="temp-info font_global font_3 stack-top" id="temp-info-text">
+      ...
+    </div>
+
     <!-- GLOBAL CASES-->
     <div class="info-box-big-2-g stack-top font_global">
 
@@ -607,7 +622,7 @@
         <label class="ibb2-label">GLOBAL DATA</label>
       </div>
       <div class="ibb2-label fill_2" style="margin-top:auto;">
-        <label class="ibb2-label" id="glob_date_text">TOTALS  ON  'date'</label>
+        <label class="ibb2-label" id="glob_date_text">TOTALS ON 'date'</label>
       </div>
 
       <div class="ibb2-label fill_2">
@@ -615,15 +630,15 @@
       </div>
 
       <div class="ibb2-value fill_1">
-        <div class="ibb2-value_text font_3" id="total_cases_text" >...</div>
+        <div class="ibb2-value_text font_3" id="total_cases_text">...</div>
       </div>
 
       <div class="ibb2-label fill_2">
-        <label class="ibb2-label" >DEATHS</label>
+        <label class="ibb2-label">DEATHS</label>
       </div>
 
       <div class="ibb2-value fill_1">
-        <div class="ibb2-value_text font_3" id="total_deaths_text" >...</div>
+        <div class="ibb2-value_text font_3" id="total_deaths_text">...</div>
       </div>
 
       <div class="ibb2-label fill_2">
@@ -631,7 +646,7 @@
       </div>
 
       <div class="ibb2-value fill_1">
-        <div class="ibb2-value_text font_3" id="total_recovered_text" >...</div>
+        <div class="ibb2-value_text font_3" id="total_recovered_text">...</div>
       </div>
     </div>
 
@@ -645,7 +660,7 @@
           <label class="ibb2-label">SELECTED LOCATION DATA</label>
         </div>
         <div class="ibb2-label fill_2" style="margin-top:auto;">
-          <label class="ibb2-label" id="sel_loc_date_text">TOTALS  ON  'date'</label>
+          <label class="ibb2-label" id="sel_loc_date_text">TOTALS ON 'date'</label>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -653,7 +668,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3" id="cases_text" >...</div>
+          <div class="ibb2-value_text font_3" id="cases_text">...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -661,7 +676,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3"  id="deaths_text" >...</div>
+          <div class="ibb2-value_text font_3" id="deaths_text">...</div>
         </div>
 
         <div class="ibb2-label fill_2">
@@ -669,7 +684,7 @@
         </div>
 
         <div class="ibb2-value fill_1">
-          <div class="ibb2-value_text font_3"  id="recovered_text" >...</div>
+          <div class="ibb2-value_text font_3" id="recovered_text">...</div>
         </div>
       </div>
 
@@ -981,7 +996,7 @@
 
     function SCENE_3D_updateDataPoints(sorted_data, key, in_table_index) {
 
-      let value_index = in_table_index * 2; 
+      let value_index = in_table_index * 2;
 
       data_points_pos_array.forEach((d, i) => {
 
