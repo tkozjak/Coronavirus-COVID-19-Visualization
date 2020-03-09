@@ -74,10 +74,6 @@ var c19_total_locations = [];   // total number of affected locations on specifi
 
 
 // D3 DATA OBJECT (array of objects)
-var sorted_data;              // an array of confirmed cases objects
-var sorted_deaths_data;       // an array of deaths objects
-var sorted_recovered_data;    // an array of recovered objects
-
 var sorted_combined_data;
 
 var data_set = false;
@@ -123,64 +119,71 @@ d3.csv(covid_confirmed_url).then(function (data) {
       });
 
 
+      // convert values to numbers and add indices
+      for (var i = 0; i < c19_number_of_dates; i++) {
+
+        let date_key = c19_dates[i];
+
+        data.forEach((item, i) => item[date_key] = [Number(item[date_key]), i]);
+        data_deaths.forEach((item, i) => item[date_key] = [Number(item[date_key]), i]);
+        data_recovered.forEach((item, i) => item[date_key] = [Number(item[date_key]), i]);
+      }
+
+      // combine all datasets into one
+      sorted_combined_data = [...data];
+      for (var i = 0; i < c19_number_of_dates; i++) {
+
+        let date_key = c19_dates[i];
+
+        console.log("COMBINED DATA ITEM, date_key : " + date_key);
+        sorted_combined_data.forEach((item, index) => {
+          item[date_key] = item[date_key].concat(data_deaths[index][date_key], data_recovered[index][date_key]);
+        });
+      }
+
+
       // iterate over each date and sort data items based on the value in the date column
       // assign the rank to each value - and put it in the tuple: [ value, rank ]
       // calculate total numer of cases across locations for that date
       for (var i = 0; i < c19_number_of_dates; i++) {
 
+        //break;
+
         let date_key = c19_dates[i];
 
-        //transform recorded values to numbers
-        data.forEach(item => item[date_key] = Number(item[date_key]));
-        data_deaths.forEach(item => item[date_key] = Number(item[date_key]));
-        data_recovered.forEach(item => item[date_key] = Number(item[date_key]));
-
         // sort confirmed first and assign rank
-        sorted_data = data.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
-        sorted_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
+        sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][0], b[date_key][0]));
+        sorted_combined_data.forEach((d, i) => (d[date_key][1] = i));
 
         // sort deaths
-        sorted_deaths_data = data_deaths.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
-        sorted_deaths_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
-        //sorted_deaths_data.forEach( (d, i) => console.log( d[date_key] ) );
+        sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][2], b[date_key][2]));
+        sorted_combined_data.forEach((d, i) => (d[date_key][3] = i));
 
         // sort recovered
-        sorted_recovered_data = data_recovered.sort((a, b) => d3.ascending(a[date_key], b[date_key]));
-        sorted_recovered_data.forEach((d, i) => (d[date_key] = [d[date_key], i]));
+        sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][4], b[date_key][4]));
+        sorted_combined_data.forEach((d, i) => (d[date_key][5] = i));
 
 
         // calculate total confirmed cases for specific date
         let total_cases = 0;
-        sorted_data.forEach((d, i) => (total_cases += d[date_key][0]));
+        sorted_combined_data.forEach((d, i) => (total_cases += d[date_key][0]));
         c19_total_cases[i] = total_cases;
 
         // calculate total confirmed deaths for specific date
         let total_deaths = 0;
-        sorted_deaths_data.forEach((d, i) => (total_deaths += d[date_key][0]));
+        sorted_combined_data.forEach((d, i) => (total_deaths += d[date_key][2]));
         c19_total_deaths[i] = total_deaths;
 
         // calculate total recovered cases for specific date
         let total_recovered = 0;
-        sorted_recovered_data.forEach((d, i) => (total_recovered += d[date_key][0]));
+        sorted_combined_data.forEach((d, i) => (total_recovered += d[date_key][4]));
         c19_total_recovered[i] = total_recovered;
 
-        console.log("COVID-19. Ranked data item " + i + ", " + date_key + "  : ");
-        console.log(data[i]);
-        console.log("Total cases on " + date_key + " : " + c19_total_cases[i]);
       }
 
-      // combine all sorted tables into one
-      sorted_combined_data = [...sorted_data];
-      for (var i = 0; i < c19_number_of_dates; i++){
-
-        let date_key = c19_dates[i];
-        console.log("COMBINED DATA ITEM, date_key : " + date_key);
-        sorted_combined_data.forEach( (item,index)=>{
-          item[date_key] = item[date_key].concat( sorted_deaths_data[index][date_key], sorted_recovered_data[index][date_key] );
-        });
-      }
 
       // INITIALIZE DATE and TOTAL CASES TO DAY ONE
+      // CRITICAL BUG HERE!!!! - check country & province name before merge !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       data_set = true;
       d3.select("#date_text").html(c19_dates[0]);
       d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
@@ -408,8 +411,8 @@ function updateConfirmedBarChart(in_data, in_index, in_table) {
 
   console.log("TABLE: " + in_table)
 
-  let rank_index = in_table*2 + 1;
-  let value_index = in_table*2; 
+  let rank_index = in_table * 2 + 1;
+  let value_index = in_table * 2;
 
   let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
   let max_deaths_value_del_date = d3.max(in_data, d => Number(d[changed_date][2]))
@@ -425,6 +428,11 @@ function updateConfirmedBarChart(in_data, in_index, in_table) {
     }
     case 1: {
       con_xScaleLog.domain([0.1, max_deaths_value_del_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+    case 2: {
+      con_xScaleLog.domain([0.1, max_recovered_value_del_date])
         .range([0, con_max_bar_width]);
       break;
     }
@@ -639,12 +647,12 @@ function changeGlobalDate(date) {
 function changeClickedCountryProvince(index, date) {
   if (index === -1)
     return;
-  let selected_country = sorted_data[index]["Country/Region"];
-  let selected_province = sorted_data[index]["Province/State"];
+  let selected_country = sorted_combined_data[index]["Country/Region"];
+  let selected_province = sorted_combined_data[index]["Province/State"];
 
-  let selected_cases = sorted_data[index][date][0];
-  let selected_deaths = sorted_deaths_data[index][date][0];
-  let selected_recovered = sorted_recovered_data[index][date][0];
+  let selected_cases = sorted_combined_data[index][date][0];
+  let selected_deaths = sorted_combined_data[index][date][2];
+  let selected_recovered = sorted_combined_data[index][date][4];
 
   d3.select("#country_text").html(selected_country);
   d3.select("#province_text").html(selected_province);
