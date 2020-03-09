@@ -130,6 +130,7 @@ d3.csv(covid_confirmed_url).then(function (data) {
       }
 
       // combine all datasets into one
+      // structure: [confirmed_value, confirmed_rank, deaths_value, deaths_rank, recovered_value, recovered_rank]
       sorted_combined_data = [...data];
       for (var i = 0; i < c19_number_of_dates; i++) {
 
@@ -137,7 +138,7 @@ d3.csv(covid_confirmed_url).then(function (data) {
 
         console.log("COMBINED DATA ITEM, date_key : " + date_key);
         sorted_combined_data.forEach((item, index) => {
-          item[date_key] = item[date_key].concat(data_deaths[index][date_key], data_recovered[index][date_key]);
+          item[date_key] = item[date_key].concat(data_deaths[index][date_key], data_recovered[index][date_key], -1, -1, -2, -2);
         });
       }
 
@@ -150,6 +151,9 @@ d3.csv(covid_confirmed_url).then(function (data) {
         //break;
 
         let date_key = c19_dates[i];
+        let prev_date_key = c19_dates[0];
+        if (i != 0)
+          prev_date_key = c19_dates[i - 1];
 
         // sort confirmed first and assign rank
         sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][0], b[date_key][0]));
@@ -162,6 +166,37 @@ d3.csv(covid_confirmed_url).then(function (data) {
         // sort recovered
         sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][4], b[date_key][4]));
         sorted_combined_data.forEach((d, i) => (d[date_key][5] = i));
+
+        //calculate daily confirmed cases
+        sorted_combined_data.forEach((d, i) => {
+          if (date_key === c19_dates[0]) {
+            d[date_key][6] = d[date_key][0]
+          }
+          else {
+            d[date_key][6] = d[date_key][0] - d[prev_date_key][0];
+          }
+          d[date_key][7] = i;
+        });
+
+        // sort daily confirmed cases
+        sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][6], b[date_key][6]));
+        sorted_combined_data.forEach((d, i) => (d[date_key][7] = i));
+
+
+               //calculate daily deaths
+        sorted_combined_data.forEach((d, i) => {
+          if (date_key === c19_dates[0]) {
+            d[date_key][8] = d[date_key][2]
+          }
+          else {
+            d[date_key][8] = d[date_key][2] - d[prev_date_key][2];
+          }
+          d[date_key][9] = i;
+        });
+
+        // sort daily confirmed cases
+        sorted_combined_data.sort((a, b) => d3.ascending(a[date_key][8], b[date_key][8]));
+        sorted_combined_data.forEach((d, i) => (d[date_key][9] = i));
 
 
         // calculate total confirmed cases for specific date
@@ -690,7 +725,7 @@ function logKey(e) {
   }
 
   if (e.code === "ArrowUp") {
-    let new_selected_table = (++selected_table) % 3;
+    let new_selected_table = (++selected_table) % 5;
     eventDISPATCH(undefined, undefined, undefined, new_selected_table)
   }
 }
