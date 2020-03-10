@@ -583,23 +583,11 @@
       <svg class="con-fill stack-top" id="svg_con_element"></svg>
     </div>
 
-    <!-- SLIDER -->
+    <!-- CALENDAR SLIDER -->
     <div class="slider_box stack-top fill_1">
 
       <div class="calendar-wrapper stack-top">
         <svg class="stack-top_2" id="calendar-svg"></svg>
-      </div>
-
-      <div id="license_text" class="slider_text_date slider_start_date stack-top"
-        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">
-        This app
-        was created by Oraclum Intelligence Systems for educational,
-        non-commercial purposes.
-        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;"
-            alt="Creative Commons License" style="border-width:0"
-            src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
-        licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
-          Attribution-NonCommercial 4.0 International License</a>
       </div>
     </div>
 
@@ -660,11 +648,11 @@
           <label class="ibb2-label">SELECTED LOCATION DATA</label>
         </div>
         <div class="ibb2-label fill_2" style="margin-top:auto;">
-          <label class="ibb2-label" id="sel_loc_date_text">TOTALS ON 'date'</label>
+          <label class="ibb2-label" id="sel_loc_date_text">CASES ON 'date'</label>
         </div>
 
         <div class="ibb2-label fill_2">
-          <label class="ibb2-label">CONFIRMED</label>
+          <label class="ibb2-label">TOTAL CONFIRMED  (+daily change)</label>
         </div>
 
         <div class="ibb2-value fill_1">
@@ -672,7 +660,7 @@
         </div>
 
         <div class="ibb2-label fill_2">
-          <label class="ibb2-label">DEATHS</label>
+          <label class="ibb2-label">TOTAL DEATHS  (+daily change)</label>
         </div>
 
         <div class="ibb2-value fill_1">
@@ -680,7 +668,7 @@
         </div>
 
         <div class="ibb2-label fill_2">
-          <label class="ibb2-label">RECOVERED</label>
+          <label class="ibb2-label">TOTAL RECOVERED</label>
         </div>
 
         <div class="ibb2-value fill_1">
@@ -688,24 +676,11 @@
         </div>
       </div>
 
-      <!-- <div class="info-box-big stack-top fill_2">
-        <label class="info-box stack-top">CONFIRMED CASES</label>
-        <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="__cases_text">select</br>location</div>
-        </div>
-      </div> -->
-
-      <!-- <div class="info-box-big stack-top fill_2" style="left:auto; right:0px;">
-        <label class="info-box stack-top">TOTAL CONFIRMED CASES</label>
-        <div class="ib-big-text stack-top fill_1">
-          <div class="big-text font_1" id="__total_cases_text">TOTAL</div>
-        </div>
-      </div> -->
 
       <div class="info-box-mid stack-top fill_2">
         <label class="info-box stack-top">COUNTRY / REGION</label>
         <div class="ib-mid-text stack-top fill_1">
-          <div class="mid-text font_2" id="country_text">select location...</div>
+          <div class="mid-text font_2" id="country_text">select a location...</div>
         </div>
       </div>
 
@@ -720,9 +695,6 @@
 
     </div>
 
-    <div class="info-box-mid stack-top" style="left:700px; right:30px; top:100; bottom:700px; display: none;"
-      id="mapid"></div>
-
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
   </div>
@@ -732,10 +704,6 @@
   <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
   <script src="js/d3.min.js"></script> <!-- D3 library -->
 
-  <!-- Make sure you put this AFTER Leaflet's CSS -->
-  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
-    integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
-    crossorigin=""></script>
 
   <!-- BARCHARTS -->
   <script src="bar_chart.js"></script>
@@ -744,17 +712,6 @@
     // replace console outputs w empty function
     console.log = function () { };
 
-    /*
-        var mymap = L.map('mapid').setView([51.505, -0.09], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-          maxZoom: 18,
-          id: 'mapbox/streets-v11',
-          tileSize: 512,
-          zoomOffset: -1,
-          accessToken: 'your.mapbox.access.token'
-        }).addTo(mymap);
-    */
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
     var h = window.innerHeight;

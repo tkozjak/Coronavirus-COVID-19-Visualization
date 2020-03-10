@@ -183,7 +183,7 @@ d3.csv(covid_confirmed_url).then(function (data) {
         sorted_combined_data.forEach((d, i) => (d[date_key][7] = i));
 
 
-               //calculate daily deaths
+        //calculate daily deaths
         sorted_combined_data.forEach((d, i) => {
           if (date_key === c19_dates[0]) {
             d[date_key][8] = d[date_key][2]
@@ -218,11 +218,10 @@ d3.csv(covid_confirmed_url).then(function (data) {
 
 
       // INITIALIZE DATE and TOTAL CASES TO DAY ONE
-      // CRITICAL BUG HERE!!!! - check country & province name before merge !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       data_set = true;
       d3.select("#date_text").html(c19_dates[0]);
       d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
-      d3.select("#sel_loc_date_text").html("TOTALS  ON  " + c19_dates[0]);
+      d3.select("#sel_loc_date_text").html("CASES  ON  " + c19_dates[0]);
 
       d3.select("#total_cases_text").html(c19_total_cases[0]);
       d3.select("#total_deaths_text").html(c19_total_deaths[0]);
@@ -257,6 +256,7 @@ var con_bc_provinces;                      // text elements - provinces
 
 // d3 non-visual elements
 var con_xScaleLog;
+var con_xScaleLin;
 var con_yScaleLin;
 
 // bar chart visual parameters
@@ -296,12 +296,19 @@ function initConfirmedBarChart(in_data) {
   let v_offset = ~~(con_value_font_size / 2);
 
   //create scales
+  // X LOG
   con_xScaleLog = d3.scaleLog()
     .base(Math.E)
     .clamp(true)
     .domain([0.1, max_val_init_date])
     .range([0, con_max_bar_width]);
 
+  // X LINEAR
+  con_xScaleLin = d3.scaleLinear()
+    .domain([0.1, max_val_init_date])
+    .range([0, con_max_bar_width]);
+
+  // Y LINEAR
   con_yScaleLin = d3.scaleLinear()
     .domain([c19_number_of_places - 1, 0])
     .range([con_top_padding, con_top_padding + total_bc_height]);
@@ -452,8 +459,17 @@ function updateConfirmedBarChart(in_data, in_index, in_table) {
   let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
   let max_deaths_value_del_date = d3.max(in_data, d => Number(d[changed_date][2]))
   let max_recovered_value_del_date = d3.max(in_data, d => Number(d[changed_date][4]))
+  let max_daily_con_value_sel_date = d3.max(in_data, d => Number(d[changed_date][6]))
+  let max_daily_death_value_sel_date = d3.max(in_data, d => Number(d[changed_date][8]))
+/*
+  if (d[initial_date][0] === 0.0)
+  return 3;
+if (use_log == true)
+  return con_xScaleLog(d[initial_date][0]);
+else
+  return con_xScaleLog(d[initial_date][0]);
 
-
+*/
   // update scales according to the biggest value on the changed day
   switch (in_table) {
     case 0: {
@@ -468,6 +484,16 @@ function updateConfirmedBarChart(in_data, in_index, in_table) {
     }
     case 2: {
       con_xScaleLog.domain([0.1, max_recovered_value_del_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+    case 4: {
+      con_xScaleLog.domain([0.1, max_daily_con_value_sel_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+    case 5: {
+      con_xScaleLog.domain([0.1, max_daily_death_value_sel_date])
         .range([0, con_max_bar_width]);
       break;
     }
@@ -674,7 +700,7 @@ function markSelectedCalendarDate(x_pos) {
 function changeGlobalDate(date) {
   d3.select("#date_text").html(date);
   d3.select("#glob_date_text").html("TOTALS  ON  " + date);
-  d3.select("#sel_loc_date_text").html("TOTALS  ON  " + date);
+  d3.select("#sel_loc_date_text").html("CASES  ON  " + date);
 
   SCENE_3D_updateDataPoints(sorted_combined_data, date, selected_table); // TO-DO: implement this better
 }
@@ -689,11 +715,14 @@ function changeClickedCountryProvince(index, date) {
   let selected_deaths = sorted_combined_data[index][date][2];
   let selected_recovered = sorted_combined_data[index][date][4];
 
+  let selected_daily_confirmmed = sorted_combined_data[index][date][6];
+  let selected_daily_deaths = sorted_combined_data[index][date][8];
+
   d3.select("#country_text").html(selected_country);
   d3.select("#province_text").html(selected_province);
 
-  d3.select("#cases_text").html(selected_cases);
-  d3.select("#deaths_text").html(selected_deaths);
+  d3.select("#cases_text").html(selected_cases + " " + "(+" + selected_daily_confirmmed + ")");
+  d3.select("#deaths_text").html(selected_deaths + " " + "(+" + selected_daily_deaths + ")");
   d3.select("#recovered_text").html(selected_recovered);
 
   SCENE_3D_UPDATE_SELECTION_RING(sorted_combined_data, index);
@@ -733,5 +762,5 @@ function logKey(e) {
     d3.select("#temp-info-text").text(dataset_name[new_selected_table]);
 
     eventDISPATCH(undefined, undefined, undefined, new_selected_table)
-  }  
+  }
 }
