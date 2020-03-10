@@ -79,7 +79,7 @@
     }
 
     div.font_3 {
-      font-size: 25px;
+      font-size: 22px;
     }
 
     div.lower-info-wrap {
@@ -269,8 +269,8 @@
     /* TEMP */
     div.temp-info {
       position: absolute;
-      left: 620px;
-      top: 10px;
+      left: 110px;
+      top: 110px;
       width: 300px;
       height: 100px;
     }
@@ -471,7 +471,6 @@
       pointer-events: none;
     }
 
-
     .value_text {
       font-size: 12px;
       fill: black;
@@ -479,100 +478,6 @@
       font-weight: 300;
     }
 
-
-
-    /* SLIDER - remove track and thumb */
-    input[type=range] {
-      -webkit-appearance: none;
-      /* Hides the slider so that custom slider can be made */
-      width: 100%;
-      /* Specific width is required for Firefox. */
-      background: transparent;
-      /* Otherwise white in Chrome */
-    }
-
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-    }
-
-    input[type=range]:focus {
-      outline: none;
-      /* Removes the blue border. You should probably do some kind of focus styling for accessibility reasons though. */
-    }
-
-    input[type=range]::-ms-track {
-      width: 100%;
-      cursor: pointer;
-
-      /* Hides the slider so custom styles can be added */
-      background: transparent;
-      border-color: transparent;
-      color: transparent;
-    }
-
-    /* SLIDER - redesign thumb */
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      border: 1px solid #000000;
-      height: 36px;
-      width: 36px;
-      border-radius: 3px;
-      background: #ffffff;
-      cursor: pointer;
-      margin-top: -14px;
-      /* You need to specify a margin in Chrome, but in Firefox and IE it is automatic */
-      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-      /* Add cool effects to your sliders! */
-    }
-
-    /* All the same stuff for Firefox */
-    input[type=range]::-moz-range-thumb {
-      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-      border: 1px solid #000000;
-      height: 36px;
-      width: 36px;
-      border-radius: 3px;
-      background: #ffffff;
-      cursor: pointer;
-    }
-
-    /* All the same stuff for IE */
-    input[type=range]::-ms-thumb {
-      box-shadow: 1px 1px 1px #000000, 0px 0px 1px #0d0d0d;
-      border: 1px solid #000000;
-      height: 36px;
-      width: 36px;
-      border-radius: 3px;
-      background: #ffffff;
-      cursor: pointer;
-    }
-
-    a:link {
-      color: rgb(200, 255, 0);
-      background-color: transparent;
-      text-decoration: none;
-    }
-
-    a:visited {
-      color: rgb(200, 255, 0);
-      ;
-      background-color: transparent;
-      text-decoration: none;
-    }
-
-    a:hover {
-      color: rgb(200, 255, 0);
-      ;
-      background-color: transparent;
-      text-decoration: underline;
-    }
-
-    a:active {
-      color: rgb(200, 255, 0);
-      ;
-      background-color: transparent;
-      text-decoration: underline;
-    }
   </style>
 </head>
 
@@ -652,7 +557,7 @@
         </div>
 
         <div class="ibb2-label fill_2">
-          <label class="ibb2-label">TOTAL CONFIRMED  (+daily change)</label>
+          <label class="ibb2-label">TOTAL CONFIRMED (+daily change)</label>
         </div>
 
         <div class="ibb2-value fill_1">
@@ -660,7 +565,7 @@
         </div>
 
         <div class="ibb2-label fill_2">
-          <label class="ibb2-label">TOTAL DEATHS  (+daily change)</label>
+          <label class="ibb2-label">TOTAL DEATHS (+daily change)</label>
         </div>
 
         <div class="ibb2-value fill_1">
@@ -690,15 +595,12 @@
           <div class="mid-text font_2" id="province_text">...by clicking on a bar or a globe data point</div>
         </div>
       </div>
-
-
-
     </div>
 
     <!-- RENDERING ELEMENT -->
     <canvas id="renderCanvas"></canvas>
-  </div>
 
+  </div>
 
   <script src="js/three.min.js"></script> <!-- THREE JS library -->
   <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
@@ -710,7 +612,7 @@
 
   <script>
     // replace console outputs w empty function
-    console.log = function () { };
+    //console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;

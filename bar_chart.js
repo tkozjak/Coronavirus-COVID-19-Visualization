@@ -457,48 +457,74 @@ function updateConfirmedBarChart(in_data, in_index, in_table) {
   let value_index = in_table * 2;
 
   let max_value_sel_date = d3.max(in_data, d => Number(d[changed_date][0]))
-  let max_deaths_value_del_date = d3.max(in_data, d => Number(d[changed_date][2]))
-  let max_recovered_value_del_date = d3.max(in_data, d => Number(d[changed_date][4]))
-  let max_daily_con_value_sel_date = d3.max(in_data, d => Number(d[changed_date][6]))
-  let max_daily_death_value_sel_date = d3.max(in_data, d => Number(d[changed_date][8]))
-/*
-  if (d[initial_date][0] === 0.0)
-  return 3;
-if (use_log == true)
-  return con_xScaleLog(d[initial_date][0]);
-else
-  return con_xScaleLog(d[initial_date][0]);
+  console.log("CONFIRMED: " + max_value_sel_date);
 
-*/
+  let max_deaths_value_del_date = d3.max(in_data, d => Number(d[changed_date][2]))
+  console.log("deaths: " + max_deaths_value_del_date);
+
+  let max_recovered_value_del_date = d3.max(in_data, d => Number(d[changed_date][4]))
+  console.log("recovereed: " + max_recovered_value_del_date);
+
+  let max_daily_con_value_sel_date = d3.max(in_data, d => Number(d[changed_date][6]))
+  console.log("daily confirmed: " + max_daily_con_value_sel_date);
+
+  let max_daily_death_value_sel_date = d3.max(in_data, d => Number(d[changed_date][8]))
+  console.log("daly deaths: " + max_daily_death_value_sel_date);
+
+  /*
+    if (d[initial_date][0] === 0.0)
+    return 3;
+  if (use_log == true)
+    return con_xScaleLog(d[initial_date][0]);
+  else
+    return con_xScaleLog(d[initial_date][0]);
+  
+  */
   // update scales according to the biggest value on the changed day
   switch (in_table) {
     case 0: {
+      use_log = true;
       con_xScaleLog.domain([0.1, max_value_sel_date])
+        .range([0, con_max_bar_width]);
+      con_xScaleLin.domain([0.1, max_value_sel_date])
         .range([0, con_max_bar_width]);
       break;
     }
     case 1: {
+      use_log = true;
       con_xScaleLog.domain([0.1, max_deaths_value_del_date])
+        .range([0, con_max_bar_width]);
+      con_xScaleLin.domain([0.1, max_deaths_value_del_date])
         .range([0, con_max_bar_width]);
       break;
     }
     case 2: {
+      use_log = true;
       con_xScaleLog.domain([0.1, max_recovered_value_del_date])
+        .range([0, con_max_bar_width]);
+      con_xScaleLin.domain([0.1, max_recovered_value_del_date])
+        .range([0, con_max_bar_width]);
+      break;
+    }
+    case 3: {
+      use_log = true;
+      con_xScaleLog.domain([0.1, max_daily_con_value_sel_date])
+        .range([0, con_max_bar_width]);
+      con_xScaleLin.domain([0.1, max_daily_con_value_sel_date])
         .range([0, con_max_bar_width]);
       break;
     }
     case 4: {
-      con_xScaleLog.domain([0.1, max_daily_con_value_sel_date])
-        .range([0, con_max_bar_width]);
-      break;
-    }
-    case 5: {
+      use_log = true;
       con_xScaleLog.domain([0.1, max_daily_death_value_sel_date])
+        .range([0, con_max_bar_width]);
+      con_xScaleLin.domain([0.1, max_daily_death_value_sel_date])
         .range([0, con_max_bar_width]);
       break;
     }
   }
 
+  // change width
   con_bc_bars.transition().ease(d3.easeLinear).duration(con_transition_v)
     .attr('width', function (d) {
       if (d[changed_date][value_index] === 0.0)
@@ -506,7 +532,7 @@ else
       if (use_log == true)
         return con_xScaleLog(d[changed_date][value_index]);
       else
-        return con_xScaleLog(d[changed_date][value_index]);
+        return con_xScaleLin(d[changed_date][value_index]);
     })
 
   // update bar y position according to the rank on the changed day
@@ -538,7 +564,12 @@ else
   // update postions and texts of values  
   con_bc_values
     .transition().ease(d3.easeLinear).duration(con_transition_v)
-    .attr('x', d => con_xScaleLog(d[changed_date][value_index]) - con_bar_padding * 2)
+    .attr('x', d => {
+      if (use_log == true)
+        return con_xScaleLog(d[changed_date][value_index]) - con_bar_padding * 2
+      else
+        return con_xScaleLin(d[changed_date][value_index]) - con_bar_padding * 2
+    })
     .tween("text", function (d) {
       let start = d3.select(this).text();
       let end = d[changed_date][value_index];
@@ -738,6 +769,8 @@ document.addEventListener('keydown', logKey);
 var dataset_name = ["TOTAL CONFIRMED", "TOTAL DEATHS", "TOTAL RECOVERED", "DAILY CONFIRMED", "DAILY DEATHS"];
 d3.select("#temp-info-text").text(dataset_name[0]);
 
+
+
 function logKey(e) {
   //let date_index = c19_dates.indexOf(selected_date);
 
@@ -758,6 +791,18 @@ function logKey(e) {
 
   if (e.code === "ArrowUp") {
     let new_selected_table = (++selected_table) % 5;
+
+    d3.select("#temp-info-text").text(dataset_name[new_selected_table]);
+
+    eventDISPATCH(undefined, undefined, undefined, new_selected_table)
+  }
+
+  if (e.code === "ArrowDown") {
+    let new_selected_table;
+    if ((selected_table - 1) < 0)
+      new_selected_table = 4;
+    else
+      new_selected_table = selected_table - 1;
 
     d3.select("#temp-info-text").text(dataset_name[new_selected_table]);
 
