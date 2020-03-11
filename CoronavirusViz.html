@@ -415,7 +415,7 @@
       text-align: center;
       padding: 45px 0;
     }
-
+/*
     div.case_text {
       display: inline-block;
       text-align: center;
@@ -433,8 +433,7 @@
       height: 75px;
       min-height: 75px;
     }
-
-
+*/
 
     .stack-top {
       z-index: 9;
@@ -460,7 +459,7 @@
       top: 10px;
       left: 5px;
     }
-
+/*
     .bar_label {
       font-size: 14px;
       fill: rgb(41, 7, 7);
@@ -473,7 +472,7 @@
       fill: white;
       font-family: "Lato";
       font-weight: 300;
-    }
+    }*/
 
     .province_label {
       font-size: 12px;
@@ -482,13 +481,7 @@
       font-weight: 300;
       pointer-events: none;
     }
-
-    .value_text {
-      font-size: 12px;
-      fill: black;
-      font-family: "Lato";
-      font-weight: 300;
-    }
+ 
   </style>
 </head>
 
@@ -713,7 +706,7 @@
     var globe_sphere_obj;
     var radius = 10;
     var globe_sphere_obj_spawned = false;
-    var specular_color = new THREE.Color(0x222222)
+    var specular_color = new THREE.Color(0x223344)
     var emission_color = new THREE.Color(0xffffff)
     var lat_lon_mat = new THREE.MeshBasicMaterial();
     lat_lon_mat.transparent = true;
@@ -737,12 +730,13 @@
     //globe_sphere_spec_tex.generateMipmaps = false;
     globe_sphere_spec_tex.anisotropy = 16;
 
+    /*
     var globe_sphere_bump_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-topo.jpg');
     globe_sphere_bump_tex.magFilter = THREE.LinearFilter;
     globe_sphere_bump_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_spec_tex.generateMipmaps = false;
     globe_sphere_bump_tex.anisotropy = 16;
-
+*/
     var globe_sphere_emissive_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
     globe_sphere_emissive_tex.magFilter = THREE.LinearFilter;
     globe_sphere_emissive_tex.minFilter = THREE.LinearFilter;
@@ -751,15 +745,15 @@
 
 
 
-    // LIGHTS
-    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
-    scene.add(directionalLight);
+    // SCENE LIGHT
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);    
     directionalLight.position.x = 0.0;
     directionalLight.position.y = 0.0;
     directionalLight.position.z = 1.0;
     directionalLight.position.normalize();
+    scene.add(directionalLight);
 
-    // SPHERE CALLBACK (adds sphere after 1 sec)
+    // SPHERE CREATE AND SPAWN - ASYNC FUNCTION
     let createAndSpawnSphere = async function () {
       console.log("START - globe creation");
 
@@ -768,8 +762,9 @@
         map: globe_sphere_diff_tex,
         specularMap: globe_sphere_spec_tex,
         specular: specular_color,
-        bumpMap: globe_sphere_bump_tex,
-        bumpScale: 0.15,
+        shininess: 8,
+        //bumpMap: globe_sphere_bump_tex,
+        //bumpScale: 0.15,
         emissive: emission_color,
         emissiveMap: globe_sphere_emissive_tex,
         emissiveIntensity: 0.0
@@ -792,27 +787,32 @@
       }
 
       scene.add(globe_sphere_obj);
+
+      return true;
     }
 
-
-    // CALL CALLBACK FUNCTION
-    createAndSpawnSphere().then(() => {
-      globe_sphere_obj_spawned = true;
+    // CREATE AND SPAWN SPHERE
+    createAndSpawnSphere().then(( value ) => {
+      globe_sphere_obj_spawned = value;
       console.log( "Callback function called!: ");
     });
 
 
     // color scale and interpolation
     const colorScale_2 = d3.scaleLinear()
-      .domain([0, 1000, 2000])
+      .domain([0, 2000, 3000])
       .range(['green', 'yellow', 'red'])
       .interpolate(d3.interpolateRgb); //interpolateHsl interpolateHcl interpolateRgb
 
 
-    // ADD DATA POINTS ON OUR GLOBE
-    var data_points_pos_array = [];
-    var factor = 0.3;
+    //
+    // DATA POINTS (CYLLINDER BARS)
+    //
+    var data_points_pos_array = []; // array of 3D cyllinders
+    var factor = 0.3;               // length scale factor
 
+    // CRATE AND SPAWN DATA POINTS - ASYNC 
+    // called inside data load/set function
     let SCENE_3D_addDataPoints = async function (sorted_data, key) {
       sorted_data.forEach((d, i) => {
         let Lat = d["Lat"];
@@ -837,7 +837,7 @@
         let color = colorScale_2(confirmed_value);
         //console.log(color);
 
-        data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 8);
+        data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 6);
         data_mat = new THREE.MeshPhongMaterial();
         data_mat.color = new THREE.Color(color);
         var data_point_obj = new THREE.Mesh(data_point, data_mat);
@@ -860,8 +860,7 @@
       return true;
     }
 
-    // add select ring
-    // rotation object
+    // SELECTION RING
     var ring_position = new THREE.Vector3(radius, 0, 0);
     var sel_ring_rotation = new THREE.Object3D;
     sel_ring_rotation.rotation.z = THREE.Math.degToRad(0);
@@ -876,6 +875,7 @@
     sel_ring_obj.visible = false;
     sel_ring_rotation.add(sel_ring_obj);
 
+    // UPDATE SELECTION RING POSITION
     function SCENE_3D_UPDATE_SELECTION_RING(sorted_data, index) {
       sel_ring_obj.visible = true;
       let selected_Lat = sorted_data[index]["Lat"];
@@ -887,6 +887,7 @@
       console.log("Selected Long: " + selected_Long);
     }
 
+    // UPDATE CYLLINDER BARS - based on dataset and date
     function SCENE_3D_updateDataPoints(sorted_data, key, in_table_index) {
 
       let value_index = in_table_index * 2;
