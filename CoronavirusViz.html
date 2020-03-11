@@ -82,6 +82,10 @@
       font-size: 22px;
     }
 
+    div.font_12px {
+      font-size: 12px;
+    }
+
     div.lower-info-wrap {
       position: absolute;
 
@@ -272,7 +276,15 @@
       left: 110px;
       top: 110px;
       width: 300px;
-      height: 100px;
+      height: 30px;
+    }
+
+    div.temp-instructions {
+      position: absolute;
+      left: 620px;
+      top: 10px;
+      width: 320px;
+      height: 30px;
     }
 
 
@@ -401,7 +413,7 @@
       font-family: "Lato";
       font-weight: 300;
       text-align: center;
-      padding: 30px 0;
+      padding: 45px 0;
     }
 
     div.case_text {
@@ -477,36 +489,46 @@
       font-family: "Lato";
       font-weight: 300;
     }
-
   </style>
 </head>
 
 <body>
   <div id="main_container" class="wrapper">
+
+    <!-- BAR CHART BOX -->
     <div class="side_box stack-top fill_1" id="side_box_div">
       <svg class="fill stack-top" id="bar_chart_container" style="visibility: hidden; right:auto;"></svg>
       <svg class="con-fill stack-top" id="svg_con_element"></svg>
     </div>
 
-    <!-- CALENDAR SLIDER -->
-    <div class="slider_box stack-top fill_1">
 
+    <!-- CALENDAR SLIDER BOX -->
+    <div class="slider_box stack-top fill_1">
       <div class="calendar-wrapper stack-top">
         <svg class="stack-top_2" id="calendar-svg"></svg>
       </div>
     </div>
 
 
+    <!-- DATE BOX -->
     <div class="date_wrapper stack-top fill_2">
       <label class="date_selected stack-top">DATE</label>
       <div class="date_selected text_date fill_1" id="date_text"> - </div>
     </div>
 
+    <!-- TITLE BOX -->
     <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
 
+    <!-- SELECTED DATASET TEXT - TEMP -->
     <div class="temp-info font_global font_3 stack-top" id="temp-info-text">
       ...
     </div>
+
+    <!-- USER INSTRUCTIONS - TEMP -->
+    <div class="temp-instructions font_global font_12px stack-top">
+      USE LEFT AND RIGHT ARROW KEYS TO CHANGE THE DATE</br>USE UP AND DOWN ARROW KEYS TO CHANGE THE DATASET
+    </div>
+
 
     <!-- GLOBAL CASES-->
     <div class="info-box-big-2-g stack-top font_global">
@@ -612,7 +634,7 @@
 
   <script>
     // replace console outputs w empty function
-    //console.log = function () { };
+    console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
@@ -651,10 +673,10 @@
     controls.addEventListener('change', render);
     controls.enableKeys = true;
     controls.keys = {
-      LEFT: 37, //left arrow
-      UP: 38, // up arrow
-      RIGHT: 39, // right arrow
-      BOTTOM: 40 // down arrow
+      LEFT: 37,     //left arrow
+      UP: 38,       // up arrow
+      RIGHT: 39,    // right arrow
+      BOTTOM: 40    // down arrow
     }
     //controls.screenSpacePanning = true;
 
@@ -728,49 +750,49 @@
     directionalLight.position.normalize();
 
     // SPHERE CALLBACK (adds sphere after 1 sec)
-    function function_with_callback(subject, callback) {
-      console.log("Starting function with callback!: " + subject);
-      setTimeout(function () {
-        globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
-        globe_sphere_mat = new THREE.MeshPhongMaterial({
-          map: globe_sphere_diff_tex,
-          specularMap: globe_sphere_spec_tex,
-          specular: specular_color,
-          bumpMap: globe_sphere_bump_tex,
-          bumpScale: 0.15,
-          emissive: emission_color,
-          emissiveMap: globe_sphere_emissive_tex,
-          emissiveIntensity: 0.0
-        });
-        globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
+    let createAndSpawnSphere = async function () {
+      console.log("START - globe creation");
 
-        for (var i = 0; i < 12; i++) {
-          lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
-          lon_obj = new THREE.Mesh(lon, lat_lon_mat);
-          lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
-          globe_sphere_obj.add(lon_obj);
-        }
+      globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
+      globe_sphere_mat = new THREE.MeshPhongMaterial({
+        map: globe_sphere_diff_tex,
+        specularMap: globe_sphere_spec_tex,
+        specular: specular_color,
+        bumpMap: globe_sphere_bump_tex,
+        bumpScale: 0.15,
+        emissive: emission_color,
+        emissiveMap: globe_sphere_emissive_tex,
+        emissiveIntensity: 0.0
+      });
+      globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
 
-        for (var i = -5; i < 6; i++) {
-          lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
-          lat_obj = new THREE.Mesh(lat, lat_lon_mat);
-          lat_obj.rotation.x = THREE.Math.degToRad(90.0);
-          lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
-          globe_sphere_obj.add(lat_obj);
-        }
+      for (var i = 0; i < 12; i++) {
+        lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
+        lon_obj = new THREE.Mesh(lon, lat_lon_mat);
+        lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
+        globe_sphere_obj.add(lon_obj);
+      }
 
-        callback();
-      }, 0);
+      for (var i = -5; i < 6; i++) {
+        lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
+        lat_obj = new THREE.Mesh(lat, lat_lon_mat);
+        lat_obj.rotation.x = THREE.Math.degToRad(90.0);
+        lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
+        globe_sphere_obj.add(lat_obj);
+      }
+
+      scene.add(globe_sphere_obj);
     }
 
-    // SPHERE CALLBACK FUNCTION
-    function_with_callback('argument value', function () {
-      console.log("Callback function called!: ");
-      scene.add(globe_sphere_obj);
+
+    // CALL CALLBACK FUNCTION
+    createAndSpawnSphere().then(() => {
       globe_sphere_obj_spawned = true;
+      console.log( "Callback function called!: ");
     });
 
-    // color scale
+
+    // color scale and interpolation
     const colorScale_2 = d3.scaleLinear()
       .domain([0, 1000, 2000])
       .range(['green', 'yellow', 'red'])
@@ -781,7 +803,7 @@
     var data_points_pos_array = [];
     var factor = 0.3;
 
-    function SCENE_3D_addDataPoints(sorted_data, key) {
+    let SCENE_3D_addDataPoints = async function (sorted_data, key) {
       sorted_data.forEach((d, i) => {
         let Lat = d["Lat"];
         let Long = d["Long"];
@@ -824,6 +846,8 @@
         data_point_obj.updateMatrix();
         data_rotation.add(data_point_obj);
       });
+
+      return true;
     }
 
     // add select ring

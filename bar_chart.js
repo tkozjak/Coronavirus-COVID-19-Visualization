@@ -76,7 +76,12 @@ var c19_total_locations = [];   // total number of affected locations on specifi
 // D3 DATA OBJECT (array of objects)
 var sorted_combined_data;
 
+// flags
 var data_set = false;
+var bars_initialized = false;
+var calendar_set = false;
+var bars_3d_set = false;
+
 var use_log = true;     // we use log scale ( LINEAR SCALE IS NOT FULLY IMPLEMENTED )
 
 
@@ -213,12 +218,12 @@ d3.csv(covid_confirmed_url).then(function (data) {
         let total_recovered = 0;
         sorted_combined_data.forEach((d, i) => (total_recovered += d[date_key][4]));
         c19_total_recovered[i] = total_recovered;
-
       }
 
 
       // INITIALIZE DATE and TOTAL CASES TO DAY ONE
       data_set = true;
+
       d3.select("#date_text").html(c19_dates[0]);
       d3.select("#glob_date_text").html("TOTALS  ON  " + c19_dates[0]);
       d3.select("#sel_loc_date_text").html("CASES  ON  " + c19_dates[0]);
@@ -228,13 +233,13 @@ d3.csv(covid_confirmed_url).then(function (data) {
       d3.select("#total_recovered_text").html(c19_total_recovered[0]);
 
       // CREATE 3D SCENE DATA OBJECTS
-      SCENE_3D_addDataPoints(sorted_combined_data, c19_dates[0]);
+      SCENE_3D_addDataPoints(sorted_combined_data, c19_dates[0]).then((value) => (bars_3d_set = value));;
 
       // INITIALIZE CONFIRMED CASES BAR CHART
-      initConfirmedBarChart(sorted_combined_data);
+      initConfirmedBarChart(sorted_combined_data).then((value) => (bars_initialized = value));
 
       // INITIALIZE CALENDAR AND ITS ELEMENTS
-      createCalendarSlider(c19_dates);
+      createCalendarSlider(c19_dates).then((value) => (calendar_set = value));
 
     });   // endif csv recovered load success
   });     // endif csv deaths load success
@@ -242,7 +247,7 @@ d3.csv(covid_confirmed_url).then(function (data) {
 
 
 //
-//  CONFIRMED BAR CHART
+//  RACING BAR CHART
 //
 
 // d3 visual elements (svg elements)
@@ -277,8 +282,10 @@ var con_province_font_size = 12;
 var con_value_font_size = 16;
 
 
-// initialize bar chart
-function initConfirmedBarChart(in_data) {
+//
+// INIT BAR CHART
+//
+let initConfirmedBarChart = async function (in_data) {
 
   // set at initial date
   let initial_date = c19_dates[0];
@@ -436,11 +443,11 @@ function initConfirmedBarChart(in_data) {
     })
     .text(d => d[initial_date][0])
 
+  return true;
 
-  console.log("TAG group: " + con_bc_groups.node().tagName);
-  console.log("TAG rect: " + con_bc_bars.node().tagName);
-  console.log("TAG rect: " + con_bc_countries.node().tagName);
-
+  //console.log("TAG group: " + con_bc_groups.node().tagName);
+  //console.log("TAG rect: " + con_bc_bars.node().tagName);
+  //console.log("TAG rect: " + con_bc_countries.node().tagName);
 }
 
 //
@@ -589,7 +596,7 @@ var calendar_day_cell_h = 40;
 var all_cal_dates;
 
 // CREATE CALENDAR ELEMENTS
-function createCalendarSlider(dates_array) {
+let createCalendarSlider = async function (dates_array) {
 
   let month = -1;
   let year = -2020;
@@ -686,6 +693,8 @@ function createCalendarSlider(dates_array) {
     .attr("stroke", "white")
     .attr('height', calendar_day_cell_w)
     .attr('width', calendar_day_cell_h)
+
+  return true;
 }
 
 
@@ -700,6 +709,11 @@ var selected_table = 0.0;         //confirmed table
 
 // event dipatch function
 function eventDISPATCH(in_date, in_index, in_x_pos, in_table) {
+
+  // exit if none of the visual elements is set
+  if (!bars_3d_set && !bars_initialized && !calendar_set)
+    return
+
   if (in_index != undefined)
     selected_place_index = in_index;
   if (in_date != undefined)
@@ -766,7 +780,7 @@ function changeClickedCountryProvince(index, date) {
 // arrow keys event listener
 document.addEventListener('keydown', logKey);
 
-var dataset_name = ["TOTAL CONFIRMED", "TOTAL DEATHS", "TOTAL RECOVERED", "DAILY CONFIRMED", "DAILY DEATHS"];
+var dataset_name = ["DATASET:   TOTAL CONFIRMED", "DATASET:   TOTAL DEATHS", "DATASET:   TOTAL RECOVERED", "DATASET:   DAILY CONFIRMED", "DATASET:   DAILY DEATHS"];
 d3.select("#temp-info-text").text(dataset_name[0]);
 
 
