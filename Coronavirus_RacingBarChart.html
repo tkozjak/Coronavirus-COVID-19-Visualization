@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+  <meta content="utf-8" http-equiv="encoding">
+  <title>COVID-19</title>
+
+  <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Lato" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css"
+    integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ=="
+    crossorigin="" />
+
+  <style>
+    * {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    html,
+    body {
+      height: 100vh;
+      width: 100vh;
+      max-width: 100%;
+      overflow: hidden;
+    }
+
+    div {
+      border-color: coral;
+      border-style: solid;
+      border-width: 0px;
+      margin: 0px;
+      padding: 0px;
+    }
+
+    label {
+      border-color: rgb(229, 255, 0);
+      border-style: solid;
+      border-width: 0px;
+      margin: 0px;
+      padding: 0px;
+
+    }
+
+    svg {
+      border-color: rgb(0, 255, 64);
+      border-style: solid;
+      border-width: 0px;
+      margin: 0px;
+      padding: 0px;
+
+    }
+
+    div.fill_1 {
+      background-color: rgb(41, 12, 14);
+      opacity: 0.9;
+    }
+
+    div.fill_2 {
+      background-color: rgb(70, 49, 12);
+      /*background-color: rgb(68, 32, 25);*/
+      opacity: 0.9;
+    }
+
+    div.font_global {
+      font-size: 15px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      white-space: nowrap;
+    }
+
+    div.font_1 {
+      font-size: 30px;
+    }
+
+    div.font_2 {
+      font-size: 20px;
+    }
+
+    div.font_3 {
+      font-size: 30px;
+    }
+
+    div.font_12px {
+      font-size: 12px;
+    }
+
+    div.lower-info-wrap {
+      position: absolute;
+
+      left: 620px;
+      right: 10px;
+      bottom: 195px;
+
+      height: 140px;
+      min-height: 140px;
+    }
+
+    div.info-box-big {
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      bottom: 0px;
+      width: 175px;
+      min-width: 175px;
+    }
+
+    div.info-box-big-2 {
+      /*display: inline-block;*/
+      position: absolute;
+      left: 0px;
+      bottom: -15px;
+      width: 175px;
+      height: 300px;
+      min-width: 200px;
+    }
+
+    div.info-box-big-2-g {
+      /*display: inline-block;*/
+      position: absolute;
+      left: 320px;
+      bottom: 93px;
+      width: 285px;
+      height: 300px;
+      
+    }
+
+    div.ibb2-label {
+      display: block;
+      margin-top: 2%;
+      width: 100%;
+      height: 12%;
+    }
+
+    div.ibb2-value {
+      display: block;
+      float: top;
+      width: 100%;
+      height: 20%;
+    }
+
+    div.ibb2-value_text {
+      position: relative;
+      text-align: center;
+      width: 100%;
+      top: 50%;
+      transform: translate(0%, -50%);
+    }
+
+    label.ibb2-label {
+      position: relative;
+      top: 25%;
+      left: 5%;
+      white-space: nowrap;
+    }
+
+
+    div.info-box-mid {
+      position: absolute;
+      left: 210px;
+      height: calc(50% - 5px);
+      width: 450px;
+      min-width: 450px;
+    }
+
+    label.info-box {
+      position: absolute;
+      top: 0px;
+      transform: translate(10%, 30%);
+      white-space: nowrap;
+    }
+
+    div.ib-big-text {
+      position: absolute;
+      top: 20px;
+      bottom: 0px;
+      width: 100%;
+    }
+
+    div.big-text {
+      position: absolute;
+      text-align: center;
+      width: 100%;
+      top: 50%;
+      transform: translate(0%, -50%);
+    }
+
+    div.ib-mid-text {
+      position: absolute;
+      top: 20px;
+      bottom: 0px;
+      width: 100%;
+    }
+
+    div.mid-text {
+      position: absolute;
+      text-align: left;
+      top: 50%;
+      margin-left: 10px;
+      transform: translate(0%, -50%);
+    }
+
+    /* CALENDAR ELEMENTS */
+    div.calendar-wrapper {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 50px;
+      height: 104px;
+      overflow: auto;
+
+      border-color: rgb(151, 106, 89);
+      border-width: 1px;
+    }
+
+    rect.cal-day {
+      fill: rgb(82, 41, 44);
+      opacity: 0.9;
+      stroke-width: 3px;
+      stroke: rgb(139, 102, 37);
+    }
+
+    rect.cal-day-sel {
+      fill: rgb(172, 76, 82);
+      opacity: 0.9;
+      stroke-width: 3px;
+      stroke: rgb(175, 129, 50);
+    }
+
+    /* SVG CONTAINER ELEMENTS */
+    svg.con-fill {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0.9;
+    }
+
+    svg.fill {
+      /*width: 100%;*/
+      left: 0px;
+      width: 100%;
+      height: 2000px;
+      /*position: relative;*/
+      top: 0px;
+      opacity: 0.9;
+      display: none;
+    }
+
+    .con-country-txt {
+      font-size: 12px;
+      fill: rgb(255, 255, 255);
+      font-family: "Lato";
+      font-weight: 300;
+    }
+
+    .con-province-txt {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+      pointer-events: none;
+    }
+
+    .con-value-txt {
+      font-size: 18px;
+      fill: rgb(255, 255, 255);
+      font-family: "Lato";
+      font-weight: 300;
+    }
+
+    /* TEMP */
+    div.temp-info {
+      position: absolute;
+      left: 110px;
+      top: 110px;
+      width: 300px;
+      height: 30px;
+    }
+
+    div.temp-instructions {
+      position: absolute;
+      left: 620px;
+      top: 10px;
+      width: 320px;
+      height: 30px;
+    }
+
+
+    div.wrapper {
+      height: 100%;
+      width: 100%;
+      max-width: 1920px;
+      position: absolute;
+    }
+
+    div.hidden {
+      display: none;
+      visibility: hidden;
+    }
+
+    div.side_box {
+      position: absolute;
+      top: 100px;
+      left: 610px;
+      bottom: 190px;
+      right: 10px;
+      padding: 0px;
+      overflow: auto;
+      
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    div.side_box::-webkit-scrollbar {
+     display: none;
+    /* Safari and Chrome */
+    }
+
+    div.slider_box {
+      position: absolute;
+      margin: 0px;
+      padding: 0px;
+      left: 10px;
+      right: 10px;
+      bottom: 5px;
+      height: 140px;
+      min-height: 90px;
+      padding: 20px;
+    }
+
+    div.slider_center {
+      position: absolute;
+      left: 30px;
+      right: 30px;
+      bottom: 50px;
+      top: 40px;
+      border-color: rgb(94, 50, 34);
+      border-width: 1px;
+    }
+
+    input.slider {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    div.slider_text_date {
+      font-size: 20px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 100;
+    }
+
+    div.slider_start_date {
+      position: absolute;
+      left: 30px;
+      top: 10px;
+      text-align: left;
+    }
+
+    div.slider_end_date {
+      position: absolute;
+      right: 30px;
+      top: 10px;
+      text-align: right;
+    }
+
+
+    div.date_wrapper {
+      position: absolute;
+
+      left: 10px;
+      bottom: 190px;
+      width: 305px;
+      min-width: 305px;
+      height: 197px;
+      min-height: 197px;      
+    }
+
+    label.date_selected {
+      position: absolute;
+      font-size: 15px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      padding: 5px;
+
+    }
+
+    div.date_selected {
+      position: absolute;
+      padding: 5px;
+
+      font-size: 25px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+
+      white-space: nowrap;
+
+      left: 0px;
+      right: 0px;
+      bottom: 0px;
+    }
+
+    div.text_date {
+      font-size: 40px;
+      top: 36px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      text-align: center;
+      padding: 45px 0;
+    }
+
+/*
+    div.case_text {
+      display: inline-block;
+      text-align: center;
+      padding: 30px 0;
+      top: 30px;
+      font-size: 45px;
+    }
+
+    div.select_wrapper {
+      position: absolute;
+
+      left: 620px;
+      width: 350px;
+      min-width: 350px;
+      height: 75px;
+      min-height: 75px;
+    }
+*/
+
+    .stack-top {
+      z-index: 9;
+    }
+
+    .stack-top_2 {
+      z-index: 10;
+    }
+
+    .title_text {
+      position: absolute;
+      font-size: 60px;
+      color: white;
+      font-family: "Lato";
+      font-weight: 300;
+      padding: 5px;
+
+      text-align: center;
+
+      /*right: 5px;*/
+      /*min-width: 590px;*/
+      min-height: 75px;
+      right: 10px;
+      top: 10px;
+      left: 5px;
+    }
+/*
+    .bar_label {
+      font-size: 14px;
+      fill: rgb(41, 7, 7);
+      font-family: "Lato";
+      font-weight: 800;
+    }
+
+    .country_label {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+    }*/
+
+    .province_label {
+      font-size: 12px;
+      fill: white;
+      font-family: "Lato";
+      font-weight: 300;
+      pointer-events: none;
+    }
+ 
+  </style>
+</head>
+
+<body>
+  <div id="main_container" class="wrapper">
+
+    <!-- BAR CHART BOX -->
+    <div class="side_box stack-top fill_1" id="side_box_div">
+      <svg class="fill stack-top" id="bar_chart_container" style="visibility: hidden; right:auto;"></svg>
+      <svg class="con-fill stack-top" id="svg_con_element"></svg>
+    </div>
+
+
+    <!-- CALENDAR SLIDER BOX -->
+    <div class="slider_box stack-top fill_1">
+      <div class="calendar-wrapper stack-top">
+        <svg class="stack-top_2" id="calendar-svg"></svg>
+      </div>
+
+      <div id="license_text" class="slider_text_date slider_start_date stack-top"
+        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">This app
+        was created by Oraclum Intelligence Systems for educational,
+        non-commercial purposes.
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;" alt="Creative Commons License"
+            style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
+        licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
+          Attribution-NonCommercial 4.0 International License</a>
+      </div>
+    </div>
+
+
+    <!-- DATE BOX -->
+    <div class="date_wrapper stack-top fill_2">
+      <label class="date_selected stack-top">DATE</label>
+      <div class="date_selected text_date fill_1" id="date_text"> - </div>
+    </div>
+
+    <!-- TITLE BOX -->
+    <div class="title_text fill_2" style="font-size: 55px;">Coronavirus, COVID-19: first two months of the pandemic</div>
+
+    <!-- SELECTED DATASET TEXT - TEMP -->
+    <div class="temp-info font_global font_3 stack-top hidden" id="temp-info-text">
+      ...
+    </div>
+
+    <!-- USER INSTRUCTIONS - TEMP -->
+    <div class="temp-instructions font_global font_12px stack-top hidden">
+      USE LEFT AND RIGHT ARROW KEYS TO CHANGE THE DATE</br>USE UP AND DOWN ARROW KEYS TO CHANGE THE DATASET
+    </div>
+
+
+    <!-- GLOBAL CASES-->
+    <div class="info-box-big-2-g stack-top font_global">
+
+      <div class="ibb2-label fill_2 hidden" style="margin-top:auto;">
+        <label class="ibb2-label">GLOBAL DATA</label>
+      </div>
+
+      <div class="ibb2-label fill_2 hidden" style="margin-top:auto;">
+        <label class="ibb2-label" id="glob_date_text">TOTALS ON 'date'</label>
+      </div>
+
+      <div class="ibb2-label fill_2">
+        <label class="ibb2-label">TOTAL CONFIRMED</label>
+      </div>
+
+      <div class="ibb2-value fill_1">
+        <div class="ibb2-value_text font_3" id="total_cases_text">...</div>
+      </div>
+
+      <div class="ibb2-label fill_2">
+        <label class="ibb2-label">TOTAL DEATHS</label>
+      </div>
+
+      <div class="ibb2-value fill_1">
+        <div class="ibb2-value_text font_3" id="total_deaths_text">...</div>
+      </div>
+
+      <div class="ibb2-label fill_2 hidden">
+        <label class="ibb2-label">TOTAL RECOVERED</label>
+      </div>
+
+      <div class="ibb2-value fill_1 hidden">
+        <div class="ibb2-value_text font_3" id="total_recovered_text">...</div>
+      </div>
+    </div>
+
+
+    <!-- SELECTED LOCATION CASES-->
+    <div class="lower-info-wrap stack-top font_global hidden">
+
+      <div class="info-box-big-2 stack-top">
+
+        <div class="ibb2-label fill_2" style="margin-top:auto;">
+          <label class="ibb2-label">SELECTED LOCATION DATA</label>
+        </div>
+        <div class="ibb2-label fill_2" style="margin-top:auto;">
+          <label class="ibb2-label" id="sel_loc_date_text">CASES ON 'date'</label>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">TOTAL CONFIRMED (+daily change)</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_3" id="cases_text">...</div>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">TOTAL DEATHS (+daily change)</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_3" id="deaths_text">...</div>
+        </div>
+
+        <div class="ibb2-label fill_2">
+          <label class="ibb2-label">TOTAL RECOVERED</label>
+        </div>
+
+        <div class="ibb2-value fill_1">
+          <div class="ibb2-value_text font_3" id="recovered_text">...</div>
+        </div>
+      </div>
+
+
+      <div class="info-box-mid stack-top fill_2">
+        <label class="info-box stack-top">COUNTRY / REGION</label>
+        <div class="ib-mid-text stack-top fill_1">
+          <div class="mid-text font_2" id="country_text">select a location...</div>
+        </div>
+      </div>
+
+      <div class="info-box-mid stack-top fill_2" style="top:auto; bottom:0px;">
+        <label class="info-box stack-top">PROVINCE / STATE</label>
+        <div class="ib-mid-text stack-top fill_1">
+          <div class="mid-text font_2" id="province_text">...by clicking on a bar or a globe data point</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RENDERING ELEMENT -->
+    <canvas id="renderCanvas"></canvas>
+
+  </div>
+
+  <script src="js/three.min.js"></script> <!-- THREE JS library -->
+  <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
+  <script src="js/d3.min.js"></script> <!-- D3 library -->
+
+
+  <!-- BARCHARTS -->
+  <script src="racing_bar_chart.js"></script>
+
+  <script>
+    // replace console outputs w empty function
+    console.log = function () { };
+
+    //WINDOW, CANVAS and RENDERER
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    window.addEventListener('resize', onWindowResize, false);
+
+    // 3D scene
+    var scene = new THREE.Scene();
+
+
+    // var camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.0001, 20000);
+    // CAMERA
+    var aspect = w / h;
+    var camera = new THREE.PerspectiveCamera(65, aspect, 1, 2000);
+    //camera.filmOffset = -20.0;
+    camera.setViewOffset(w, h, w * 0.35, h * 0.15, w, h);
+    camera.updateProjectionMatrix();
+    camera.position.x = 0;
+    camera.position.z = -40;
+    camera.position.y = 0;
+
+    // RENDERER
+    var renderer = new THREE.WebGLRenderer({ antialias: true, canvas: renderCanvas });
+    renderer.context.enable(renderer.context.DEPTH_TEST);
+    renderer.setSize(w, h);
+    renderer.sortObjects = false;
+    renderer.gammaFactor = 2.2;
+    renderer.gammaOutput = true;
+
+
+    // camera controls
+    var controls = new THREE.OrbitControls(camera, renderer.domElement);
+    controls.enableRotate = true;
+    controls.enablePan = false;
+    controls.addEventListener('change', render);
+    controls.enableKeys = true;
+    controls.keys = {
+      LEFT: 37,     //left arrow
+      UP: 38,       // up arrow
+      RIGHT: 39,    // right arrow
+      BOTTOM: 40    // down arrow
+    }
+    //controls.screenSpacePanning = true;
+
+    // CLICK AND TOUCH event listeners
+    renderer.domElement.addEventListener('click', raycast, false);
+    renderer.domElement.addEventListener('touchend', onDocumentTouchEnd, false);
+
+
+    //***************************************************************************************
+    //
+    // SCENE OBJECTS
+    //
+    //***************************************************************************************
+
+    // HELPER POLAR GRID
+    var helper = new THREE.PolarGridHelper(50, 8, 8, 128);
+    helper.material.opacity = 0.2;
+    helper.material.transparent = true;
+    scene.add(helper);
+
+    // GLOBE
+    var globe_sphere_geo;
+    var globe_sphere_mat;
+    var globe_sphere_obj;
+    var radius = 10;
+    var globe_sphere_obj_spawned = false;
+    var specular_color = new THREE.Color(0x223344)
+    var emission_color = new THREE.Color(0xffffff)
+    var lat_lon_mat = new THREE.MeshBasicMaterial();
+    lat_lon_mat.transparent = true;
+    lat_lon_mat.opacity = 0.4;
+
+
+    var gl = document.getElementById("renderCanvas").getContext("experimental-webgl");
+    //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
+
+
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day-gradient.jpg');
+    globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_diff_tex.generateMipmaps = false;
+    globe_sphere_diff_tex.encoding = THREE.sRGBEncoding;
+    globe_sphere_diff_tex.anisotropy = 16;
+
+    var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-specular.jpg');
+    globe_sphere_spec_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_spec_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_spec_tex.anisotropy = 16;
+
+    /*
+    var globe_sphere_bump_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-topo.jpg');
+    globe_sphere_bump_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_bump_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_bump_tex.anisotropy = 16;
+*/
+    var globe_sphere_emissive_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-outline-shifted-gray.png');
+    globe_sphere_emissive_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_emissive_tex.minFilter = THREE.LinearFilter;
+    //globe_sphere_spec_tex.generateMipmaps = false;
+    globe_sphere_emissive_tex.anisotropy = 16;
+
+
+
+    // SCENE LIGHT
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);    
+    directionalLight.position.x = 0.0;
+    directionalLight.position.y = 0.0;
+    directionalLight.position.z = 1.0;
+    directionalLight.position.normalize();
+    scene.add(directionalLight);
+
+    // SPHERE CREATE AND SPAWN - ASYNC FUNCTION
+    let createAndSpawnSphere = async function () {
+      console.log("START - globe creation");
+
+      globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
+      globe_sphere_mat = new THREE.MeshPhongMaterial({
+        map: globe_sphere_diff_tex,
+        specularMap: globe_sphere_spec_tex,
+        specular: specular_color,
+        shininess: 8,
+        //bumpMap: globe_sphere_bump_tex,
+        //bumpScale: 0.15,
+        emissive: emission_color,
+        emissiveMap: globe_sphere_emissive_tex,
+        emissiveIntensity: 0.0
+      });
+      globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
+
+      for (var i = 0; i < 12; i++) {
+        lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
+        lon_obj = new THREE.Mesh(lon, lat_lon_mat);
+        lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
+        globe_sphere_obj.add(lon_obj);
+      }
+
+      for (var i = -5; i < 6; i++) {
+        lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
+        lat_obj = new THREE.Mesh(lat, lat_lon_mat);
+        lat_obj.rotation.x = THREE.Math.degToRad(90.0);
+        lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
+        globe_sphere_obj.add(lat_obj);
+      }
+
+      scene.add(globe_sphere_obj);
+
+      return true;
+    }
+
+    // CREATE AND SPAWN SPHERE
+    createAndSpawnSphere().then(( value ) => {
+      globe_sphere_obj_spawned = value;
+      console.log( "Callback function called!: ");
+    });
+
+
+    // color scale and interpolation
+    const colorScale_2 = d3.scaleLinear()
+      .domain([0, 2000, 3000])
+      .range(['green', 'yellow', 'red'])
+      .interpolate(d3.interpolateRgb); //interpolateHsl interpolateHcl interpolateRgb
+
+
+    //
+    // DATA POINTS (CYLLINDER BARS)
+    //
+    var data_points_pos_array = []; // array of 3D cyllinders
+    var factor = 0.3;               // length scale factor
+
+    // CRATE AND SPAWN DATA POINTS - ASYNC 
+    // called inside data load/set function
+    let SCENE_3D_addDataPoints = async function (sorted_data, key) {
+      sorted_data.forEach((d, i) => {
+        let Lat = d["Lat"];
+        let Long = d["Long"];
+
+        let value_rank_tuple = d[key];
+
+        // rotation object
+        var data_rotation = new THREE.Object3D;
+        data_rotation.rotation.z = THREE.Math.degToRad(Lat);
+        data_rotation.rotation.y = THREE.Math.degToRad(Long);
+
+        scene.add(data_rotation);
+
+        // data point mesh
+        let confirmed_value = value_rank_tuple[0];
+
+        var scale = Math.log(confirmed_value + 0.1);
+        scale *= factor;
+        var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+
+        let color = colorScale_2(confirmed_value);
+        //console.log(color);
+
+        data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 6);
+        data_mat = new THREE.MeshPhongMaterial();
+        data_mat.color = new THREE.Color(color);
+        var data_point_obj = new THREE.Mesh(data_point, data_mat);
+        data_point_obj.rotation.z = THREE.Math.degToRad(90);
+        data_point_obj.scale.y = scale;
+        data_point_obj.name = String(d["Country/Region"]) + "$" + String(d["Province/State"] + "$" + String(i));
+
+        if (value_rank_tuple[0] == 0.0)
+          data_point_obj.visible = false;
+        else
+          data_point_obj.visible = true;
+
+        data_points_pos_array.push(data_point_obj);
+
+        data_point_obj.position.copy(position);
+        data_point_obj.updateMatrix();
+        data_rotation.add(data_point_obj);
+      });
+
+      return true;
+    }
+
+    // SELECTION RING
+    var ring_position = new THREE.Vector3(radius, 0, 0);
+    var sel_ring_rotation = new THREE.Object3D;
+    sel_ring_rotation.rotation.z = THREE.Math.degToRad(0);
+    sel_ring_rotation.rotation.y = THREE.Math.degToRad(0);
+    scene.add(sel_ring_rotation);
+    var sel_ring_geo = new THREE.RingGeometry(0.10, 0.14, 32);
+    var sel_ring_mat = new THREE.MeshBasicMaterial();
+    var sel_ring_obj = new THREE.Mesh(sel_ring_geo, sel_ring_mat);
+    sel_ring_obj.rotation.y = THREE.Math.degToRad(90);
+    sel_ring_obj.position.copy(ring_position);
+    sel_ring_obj.updateMatrix();
+    sel_ring_obj.visible = false;
+    sel_ring_rotation.add(sel_ring_obj);
+
+    // UPDATE SELECTION RING POSITION
+    function SCENE_3D_UPDATE_SELECTION_RING(sorted_data, index) {
+      sel_ring_obj.visible = true;
+      let selected_Lat = sorted_data[index]["Lat"];
+      let selected_Long = sorted_data[index]["Long"];
+      sel_ring_rotation.rotation.z = THREE.Math.degToRad(selected_Lat);
+      sel_ring_rotation.rotation.y = THREE.Math.degToRad(selected_Long);
+      sel_ring_rotation.updateMatrix();
+      console.log("Selected Lat: " + selected_Lat);
+      console.log("Selected Long: " + selected_Long);
+    }
+
+    // UPDATE CYLLINDER BARS - based on dataset and date
+    function SCENE_3D_updateDataPoints(sorted_data, key, in_table_index) {
+
+      let value_index = in_table_index * 2;
+
+      data_points_pos_array.forEach((d, i) => {
+
+        let value_rank_tuple = sorted_data[i][key];
+        let confirmed_value = value_rank_tuple[value_index];
+
+        var scale = Math.log(confirmed_value + 0.1);
+        scale *= factor;
+
+        let color = colorScale_2(confirmed_value);
+        console.log(color);
+
+        if (value_rank_tuple[value_index] == 0.0)
+          d.visible = false;
+        else
+          d.visible = true;
+
+        let position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+        d.position.copy(position);
+        d.scale.y = scale;
+        d.material.color = new THREE.Color(color);
+      })
+    }
+
+
+    // RENDER / UPDATE FUNCTION
+    var render = function () {
+
+      requestAnimationFrame(render);
+
+      //update light position
+      updateLightDirection();
+
+      //controls.update();
+      renderer.render(scene, camera);
+    };
+
+    // recalculate projection when windows resized
+    function onWindowResize() {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    }
+
+    // update light direction when camera changed
+    function updateLightDirection() {
+      directionalLight.position.x = camera.position.x;
+      directionalLight.position.y = camera.position.y;
+      directionalLight.position.z = camera.position.z;
+    }
+
+
+    // RAYCASTING EVENT HANDLERS
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
+    raycaster.params.Points.threshold = 10.0;
+
+    // mouse click raycast
+    function raycast(event) {
+      console.log("Mouse click event.");
+
+      //1. sets the mouse position with a coordinate system where the center
+      mouse.x = (event.clientX / renderer.domElement.clientWidth) * 2 - 1;
+      mouse.y = - (event.clientY / renderer.domElement.clientHeight) * 2 + 1;
+      console.log("Mouse click: " + mouse.x + ",  " + mouse.x);
+
+
+      //2. set the picking ray from the camera position and mouse coordinates
+      raycaster.setFromCamera(mouse, camera);
+      console.log("Mouse click: " + raycaster.ray.origin.x + ", " + raycaster.ray.origin.y + ", " + raycaster.ray.origin.z + "; "
+        + raycaster.ray.direction.x + ", " + raycaster.ray.direction.y + ", " + raycaster.ray.direction.z);
+
+      //3. compute intersections
+      let intersects = raycaster.intersectObjects(data_points_pos_array);
+
+      if (typeof intersects[0] !== 'undefined') {
+        let name = intersects[0].object.name.split("$");
+        console.log("intersected : " + name);
+        eventDISPATCH(undefined, name[2], undefined, undefined);
+      }
+    }
+
+    // touch tap raycast
+    function onDocumentTouchEnd(event) {
+      console.log("Touch event.");
+      var touches = event.changedTouches;
+      console.log(touches[0]);
+
+      //1. sets the mouse position with a coordinate system where the center
+      mouse.x = (touches[0].pageX / renderer.domElement.clientWidth) * 2 - 1;
+      mouse.y = - (touches[0].pageY / renderer.domElement.clientHeight) * 2 + 1;
+      console.log("Touch event: " + mouse.x + ",  " + mouse.x);
+
+
+      //2. set the picking ray from the camera position and mouse coordinates
+      raycaster.setFromCamera(mouse, camera);
+      console.log("Touch event: " + raycaster.ray.origin.x + ", " + raycaster.ray.origin.y + ", " + raycaster.ray.origin.z + "; "
+        + raycaster.ray.direction.x + ", " + raycaster.ray.direction.y + ", " + raycaster.ray.direction.z);
+
+      //3. compute intersections
+      let intersects = raycaster.intersectObjects(data_points_pos_array);
+
+      if (typeof intersects[0] !== 'undefined') {
+        let name = intersects[0].object.name.split("$");
+        console.log("intersected : " + name);
+        eventDISPATCH(undefined, name[2], undefined, undefined);
+      }
+    }
+
+
+    // CALL RENDER
+    render();
+
+  </script>
+</body>
+
+</html>
