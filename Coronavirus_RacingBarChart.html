@@ -758,7 +758,7 @@
     let createAndSpawnSphere = async function () {
       console.log("START - globe creation");
 
-      globe_sphere_geo = new THREE.SphereGeometry(radius, 64, 64);
+      globe_sphere_geo = new THREE.PlaneGeometry( 30, 20, 1, 1 );
       globe_sphere_mat = new THREE.MeshPhongMaterial({
         map: globe_sphere_diff_tex,
         specularMap: globe_sphere_spec_tex,
@@ -771,7 +771,9 @@
         emissiveIntensity: 0.0
       });
       globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
-
+      globe_sphere_obj.rotateY(180 * (Math.PI/180) );
+      
+/*
       for (var i = 0; i < 12; i++) {
         lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
         lon_obj = new THREE.Mesh(lon, lat_lon_mat);
@@ -786,7 +788,7 @@
         lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
         globe_sphere_obj.add(lat_obj);
       }
-
+*/
       scene.add(globe_sphere_obj);
 
       return true;
