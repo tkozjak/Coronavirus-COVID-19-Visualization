@@ -123,7 +123,7 @@
       bottom: 93px;
       width: 285px;
       height: 300px;
-      
+
     }
 
     div.ibb2-label {
@@ -307,14 +307,14 @@
       right: 10px;
       padding: 0px;
       overflow: auto;
-      
+
       -ms-overflow-style: none;
       scrollbar-width: none;
     }
 
     div.side_box::-webkit-scrollbar {
-     display: none;
-    /* Safari and Chrome */
+      display: none;
+      /* Safari and Chrome */
     }
 
     div.slider_box {
@@ -366,6 +366,26 @@
       text-align: right;
     }
 
+    div.data-source {
+      position: absolute;
+
+      left: 10px;
+      bottom: 395px;
+      width: 595px;
+      min-width: 595px;
+      height: 65px;
+      min-height: 65px;
+
+    }
+
+    div.data-source-text {
+      position: absolute;
+      text-align: left;
+      margin-left: 20px;
+      top: 50%;      
+      transform: translate(0%, -50%);
+    }
+
 
     div.date_wrapper {
       position: absolute;
@@ -375,7 +395,7 @@
       width: 305px;
       min-width: 305px;
       height: 197px;
-      min-height: 197px;      
+      min-height: 197px;
     }
 
     label.date_selected {
@@ -414,7 +434,7 @@
       padding: 45px 0;
     }
 
-/*
+    /*
     div.case_text {
       display: inline-block;
       text-align: center;
@@ -448,18 +468,20 @@
       color: white;
       font-family: "Lato";
       font-weight: 300;
-      padding: 5px;
+      padding: 10px;
 
       text-align: center;
 
       /*right: 5px;*/
       /*min-width: 590px;*/
-      min-height: 75px;
+      min-height: 65px;
       right: 10px;
       top: 10px;
       left: 5px;
+
     }
-/*
+
+    /*
     .bar_label {
       font-size: 14px;
       fill: rgb(41, 7, 7);
@@ -481,7 +503,6 @@
       font-weight: 300;
       pointer-events: none;
     }
- 
   </style>
 </head>
 
@@ -502,14 +523,20 @@
       </div>
 
       <div id="license_text" class="slider_text_date slider_start_date stack-top"
-        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">This app
+        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">
+        This app
         was created by Oraclum Intelligence Systems for educational,
         non-commercial purposes.
-        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;" alt="Creative Commons License"
-            style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;"
+            alt="Creative Commons License" style="border-width:0"
+            src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
         licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
           Attribution-NonCommercial 4.0 International License</a>
       </div>
+    </div>
+
+    <div class="data-source stack-top fill_2">
+      <div class="data-source-text  font_global font_12px"style="font-size: 13px;"> Data is pulled from online data repository for the 2019 Novel Coronavirus Visual Dashboard <br> operated by Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE) </div>
     </div>
 
 
@@ -520,7 +547,8 @@
     </div>
 
     <!-- TITLE BOX -->
-    <div class="title_text fill_2" style="font-size: 55px;">Coronavirus, COVID-19: first two months of the pandemic</div>
+    <div class="title_text fill_2" style="font-size: 50px;">Coronavirus, COVID-19 : THE FIRST TWO MONTHS OF THE 2020
+      PANDEMIC</div>
 
     <!-- SELECTED DATASET TEXT - TEMP -->
     <div class="temp-info font_global font_3 stack-top hidden" id="temp-info-text">
@@ -653,12 +681,12 @@
     // var camera = new THREE.OrthographicCamera(-w / 2, w / 2, h / 2, -h / 2, 0.0001, 20000);
     // CAMERA
     var aspect = w / h;
-    var camera = new THREE.PerspectiveCamera(65, aspect, 1, 2000);
+    var camera = new THREE.PerspectiveCamera(5, aspect, 1, 2000);
     //camera.filmOffset = -20.0;
-    camera.setViewOffset(w, h, w * 0.35, h * 0.15, w, h);
+    camera.setViewOffset(w, h, w * 0.341, h * 0.169, w, h);
     camera.updateProjectionMatrix();
     camera.position.x = 0;
-    camera.position.z = -40;
+    camera.position.z = -725;
     camera.position.y = 0;
 
     // RENDERER
@@ -747,18 +775,24 @@
 
 
     // SCENE LIGHT
-    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);    
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.position.x = 0.0;
     directionalLight.position.y = 0.0;
     directionalLight.position.z = 1.0;
     directionalLight.position.normalize();
     scene.add(directionalLight);
 
+    // MAP PLANE PARAMS
+    var map_width = 35;
+    var map_x_factor = 180 / map_width * 2;
+    var map_height = 30;
+    var map_y_factor = map_height / 2;
+
     // SPHERE CREATE AND SPAWN - ASYNC FUNCTION
     let createAndSpawnSphere = async function () {
       console.log("START - globe creation");
 
-      globe_sphere_geo = new THREE.PlaneGeometry( 30, 20, 1, 1 );
+      globe_sphere_geo = new THREE.PlaneGeometry(map_width, map_height, 1, 1);
       globe_sphere_mat = new THREE.MeshPhongMaterial({
         map: globe_sphere_diff_tex,
         specularMap: globe_sphere_spec_tex,
@@ -771,33 +805,33 @@
         emissiveIntensity: 0.0
       });
       globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
-      globe_sphere_obj.rotateY(180 * (Math.PI/180) );
-      
-/*
-      for (var i = 0; i < 12; i++) {
-        lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
-        lon_obj = new THREE.Mesh(lon, lat_lon_mat);
-        lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
-        globe_sphere_obj.add(lon_obj);
-      }
+      globe_sphere_obj.rotateY(180 * (Math.PI / 180));
 
-      for (var i = -5; i < 6; i++) {
-        lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
-        lat_obj = new THREE.Mesh(lat, lat_lon_mat);
-        lat_obj.rotation.x = THREE.Math.degToRad(90.0);
-        lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
-        globe_sphere_obj.add(lat_obj);
-      }
-*/
+      /*
+            for (var i = 0; i < 12; i++) {
+              lon = new THREE.TorusGeometry(radius, 0.007, 4, 128);
+              lon_obj = new THREE.Mesh(lon, lat_lon_mat);
+              lon_obj.rotation.y = THREE.Math.degToRad(i * 15.0);
+              globe_sphere_obj.add(lon_obj);
+            }
+      
+            for (var i = -5; i < 6; i++) {
+              lat = new THREE.TorusGeometry(Math.cos(THREE.Math.degToRad(i * 15)) * radius, 0.007, 4, 128);
+              lat_obj = new THREE.Mesh(lat, lat_lon_mat);
+              lat_obj.rotation.x = THREE.Math.degToRad(90.0);
+              lat_obj.position.y = Math.sin(THREE.Math.degToRad(i * 15)) * radius;
+              globe_sphere_obj.add(lat_obj);
+            }
+      */
       scene.add(globe_sphere_obj);
 
       return true;
     }
 
     // CREATE AND SPAWN SPHERE
-    createAndSpawnSphere().then(( value ) => {
+    createAndSpawnSphere().then((value) => {
       globe_sphere_obj_spawned = value;
-      console.log( "Callback function called!: ");
+      console.log("Callback function called!: ");
     });
 
 
@@ -830,21 +864,30 @@
 
         scene.add(data_rotation);
 
+        var data_lon_lat_to_translation = new THREE.Object3D
+        data_lon_lat_to_translation.position.x = Long / -map_x_factor;
+        data_lon_lat_to_translation.position.y = Math.sin(THREE.Math.degToRad(Lat) / (Math.PI * 0.5)) * 16.0;
+        scene.add(data_lon_lat_to_translation);
+
         // data point mesh
         let confirmed_value = value_rank_tuple[0];
 
         var scale = Math.log(confirmed_value + 0.1);
         scale *= factor;
-        var position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+        var position = new THREE.Vector3(radius + scale / 1.0, 0, 0);
 
         let color = colorScale_2(confirmed_value);
         //console.log(color);
 
-        data_point = new THREE.CylinderGeometry(0.06, 0.06, 1, 6);
+        data_point = new THREE.CylinderGeometry(0.2, 0.2, 1, 20);
         data_mat = new THREE.MeshPhongMaterial();
-        data_mat.color = new THREE.Color(color);
+        data_mat.color = new THREE.Color(0x000000);
+        data_mat.emissive = new THREE.Color(color);
+        data_mat.emissiveIntensity = 1;
+        data_mat.shininess = 0;
         var data_point_obj = new THREE.Mesh(data_point, data_mat);
-        data_point_obj.rotation.z = THREE.Math.degToRad(90);
+        //data_point_obj.rotation.z = THREE.Math.degToRad(90);
+        data_point_obj.rotation.x = THREE.Math.degToRad(90);
         data_point_obj.scale.y = scale;
         data_point_obj.name = String(d["Country/Region"]) + "$" + String(d["Province/State"] + "$" + String(i));
 
@@ -855,9 +898,10 @@
 
         data_points_pos_array.push(data_point_obj);
 
-        data_point_obj.position.copy(position);
-        data_point_obj.updateMatrix();
-        data_rotation.add(data_point_obj);
+        //data_point_obj.position.copy(position);
+        //data_point_obj.updateMatrix();
+        //data_rotation.add(data_point_obj);
+        data_lon_lat_to_translation.add(data_point_obj);
       });
 
       return true;
@@ -911,10 +955,11 @@
         else
           d.visible = true;
 
-        let position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
-        d.position.copy(position);
+        //let position = new THREE.Vector3(radius + scale / 2.0, 0, 0);
+        //d.position.copy(position);
         d.scale.y = scale;
-        d.material.color = new THREE.Color(color);
+        //d.material.color = new THREE.Color(color);
+        d.material.emissive = new THREE.Color(color);
       })
     }
 

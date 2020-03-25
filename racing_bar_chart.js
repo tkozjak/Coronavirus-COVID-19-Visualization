@@ -273,7 +273,10 @@ var con_bc_height = -1;
 var con_bar_height = 60;
 var con_bar_padding = 4;
 
-var con_transition_v = 1000; // transition time
+var country_x_offset = -20;
+var province_x_offset = 20;
+
+var con_transition_v = 2000; // transition time
 var con_flip_value = 110;  // bar width treshold that drives the placement of province name
 
 // text elements
@@ -364,7 +367,7 @@ let initConfirmedBarChart = async function (in_data) {
   // ..and append two spans for country names - split in two if name is more than one word
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 - c_offset)
+    .attr('x', country_x_offset).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 - c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
@@ -373,7 +376,7 @@ let initConfirmedBarChart = async function (in_data) {
 
   con_bc_countries.data(in_data)
     .append('tspan')
-    .attr('x', -5).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 + c_offset)
+    .attr('x', country_x_offset).attr('y', con_bar_height / 2 + c_offset - con_bar_padding).attr('dy', 0 + c_offset)
     .text(function (d) {
       let c_s = String(d["Country/Region"]);
       let space_pos = c_s.indexOf(' ');
@@ -394,7 +397,7 @@ let initConfirmedBarChart = async function (in_data) {
   // ...and append two spans for province names - split in two if name is more than one word
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', -p_offset)
+    .attr('x', province_x_offset).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', -p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
       let ws_c = c_s.split(" ").length - 1
@@ -407,7 +410,7 @@ let initConfirmedBarChart = async function (in_data) {
 
   con_bc_provinces.data(in_data)
     .append('tspan')
-    .attr('x', 5).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', +p_offset)
+    .attr('x', province_x_offset).attr('y', con_bar_height / 2 + p_offset - con_bar_padding).attr('dy', +p_offset)
     .text(function (d) {
       let c_s = String(d["Province/State"]);
       let ws_c = c_s.split(" ").length - 1
