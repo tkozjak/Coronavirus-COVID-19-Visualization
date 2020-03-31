@@ -9,11 +9,11 @@ var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-
 
 // JOHNS HOPKINS REPO
 // confirmed
-var covid_confirmed_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Confirmed.csv";
+var covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
 // deaths
-var covid_deaths_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+var covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
 // recovered
-var covid_recovered_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+var covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
 
 
 //
