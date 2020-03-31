@@ -703,10 +703,51 @@
     helper.material.transparent = true;
     scene.add(helper);
 
+
+    var geometry;
+    var line;
+
+    var l_material = new THREE.LineBasicMaterial({ color: 0xffffff });
+    l_material.transparent = true;
+    l_material.opacity = 0.35;
+    var p_material = new THREE.PointsMaterial({ color: 0x888888 });
+    var countries_objects = [];
+
     // LOAD geoJSON
     d3.json("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json").then(function (data) {
-      
-      console.log(data);
+
+      var features_set = data.features;
+
+      //var afganistan_poly = features_set[3]["geometry"]["coordinates"][0];
+      //console.log(afganistan_poly);
+
+      data.features.forEach((country, i) => {
+        let line_points = [];
+
+        let coordinates_first_poly;
+
+        if (country.geometry.type == "Polygon") {
+          coordinates_first_poly = country["geometry"]["coordinates"][0];
+        }
+        else {
+          coordinates_first_poly = country["geometry"]["coordinates"][1][0];
+        }
+
+        coordinates_first_poly.forEach((geo_point, i) => {
+          let lon = THREE.Math.degToRad(geo_point[0] + 270);
+          let lat = THREE.Math.degToRad(geo_point[1] - 90);
+          let x = radius * Math.cos(lat) * Math.cos(lon);
+          let y = radius * Math.cos(lat) * Math.sin(lon);
+          let z = radius * Math.sin(lat);
+          v = new THREE.Vector3();
+          line_points.push(v.setFromSphericalCoords(radius+0.01, lat, lon));
+        })
+
+        geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+        line = new THREE.Line(geometry, l_material);
+        scene.add(line);
+
+      })
     });
 
 
