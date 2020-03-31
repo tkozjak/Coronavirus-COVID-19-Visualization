@@ -412,7 +412,8 @@
       text-align: center;
       padding: 45px 0;
     }
-/*
+
+    /*
     div.case_text {
       display: inline-block;
       text-align: center;
@@ -456,7 +457,8 @@
       top: 10px;
       left: 5px;
     }
-/*
+
+    /*
     .bar_label {
       font-size: 14px;
       fill: rgb(41, 7, 7);
@@ -478,7 +480,6 @@
       font-weight: 300;
       pointer-events: none;
     }
- 
   </style>
 </head>
 
@@ -499,11 +500,13 @@
       </div>
 
       <div id="license_text" class="slider_text_date slider_start_date stack-top"
-        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">This app
+        style="padding: 2px 0; font-size: 10px; left:30px; right:30px; top:auto; bottom:15px; height:20px; min-height:20px;">
+        This app
         was created by Oraclum Intelligence Systems for educational,
         non-commercial purposes.
-        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;" alt="Creative Commons License"
-            style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
+        <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img style="vertical-align: middle;"
+            alt="Creative Commons License" style="border-width:0"
+            src="https://i.creativecommons.org/l/by-nc/4.0/80x15.png" /></a> This work is
         licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons
           Attribution-NonCommercial 4.0 International License</a>
       </div>
@@ -624,10 +627,12 @@
 
   </div>
 
-  <script src="js/three.min.js"></script>                       <!-- THREE JS library -->
-  <script src="js/OrbitControls.js"></script>                   <!-- ORBIT CONTROLS library -->
-  <script src="js/d3.min.js"></script>                          <!-- D3 library -->
-  <script src="https://d3js.org/topojson.v2.min.js"></script>   <!-- D3 topojson -->
+  <script src="js/three.min.js"></script> <!-- THREE JS library -->
+  <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
+  <!-- <script src="js/d3.min.js"></script> D3 library -->
+
+  <script src="http://d3js.org/d3.v5.min.js"></script>
+  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
 
 
   <!-- BARCHARTS -->
@@ -635,7 +640,7 @@
 
   <script>
     // replace console outputs w empty function
-    console.log = function () { };
+    //console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
@@ -698,6 +703,13 @@
     helper.material.transparent = true;
     scene.add(helper);
 
+    // LOAD geoJSON
+    d3.json("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json").then(function (data) {
+      
+      console.log(data);
+    });
+
+
     // GLOBE
     var globe_sphere_geo;
     var globe_sphere_mat;
@@ -711,7 +723,7 @@
     lat_lon_mat.opacity = 0.4;
 
 
-    var gl = document.getElementById("renderCanvas").getContext("experimental-webgl");
+    //var gl = document.getElementById("renderCanvas").getContext("experimental-webgl");
     //alert(gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
 
@@ -744,7 +756,7 @@
 
 
     // SCENE LIGHT
-    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);    
+    var directionalLight = new THREE.DirectionalLight(0xffffff, 1.0);
     directionalLight.position.x = 0.0;
     directionalLight.position.y = 0.0;
     directionalLight.position.z = 1.0;
@@ -790,9 +802,9 @@
     }
 
     // CREATE AND SPAWN SPHERE
-    createAndSpawnSphere().then(( value ) => {
+    createAndSpawnSphere().then((value) => {
       globe_sphere_obj_spawned = value;
-      console.log( "Callback function called!: ");
+      //console.log("Callback function called!: ");
     });
 
 
