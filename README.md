@@ -1,6 +1,6 @@
 # COVID-19: Visualization of The 2020 Coronavirus Pandemic
 
-![Image description](link-to-image)
+![Covid-19 Global Spread](https://i.ibb.co/x8qdt69/COVID-19-Mozilla-Firefox-4-1-2020-3-46-15-PM.jpg)
   
  This visualization consists of a digital globe, calendar slider and a racing bar charts. It visualizes both total cases as well as daily changes in confirmed cases and deaths.
  Data is pulled from data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE).
