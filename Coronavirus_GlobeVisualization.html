@@ -520,7 +520,7 @@
     </div>
 
     <!-- TITLE BOX -->
-    <div class="title_text fill_2" style="font-size: 55px;">Coronavirus COVID-19</div>
+    <div class="title_text fill_2" style="font-size: 55px;" id="title_text">Coronavirus COVID-19</div>
 
     <!-- SELECTED DATASET TEXT - TEMP -->
     <div class="temp-info font_global font_3 stack-top" id="temp-info-text">
@@ -640,7 +640,7 @@
 
   <script>
     // replace console outputs w empty function
-    //console.log = function () { };
+    console.log = function () { };
 
     //WINDOW, CANVAS and RENDERER
     var w = window.innerWidth;
@@ -718,7 +718,7 @@
     var countries_line_objects = [];
 
     // LOAD geoJSON
-    d3.json("https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json").then(function (data) {
+    d3.json("https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/countries.geo.json").then(function (data) {
 
       data.features.forEach((country, i) => {
 

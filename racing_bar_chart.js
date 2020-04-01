@@ -3,46 +3,65 @@
 //  DATA URLs
 //
 
-// MY REPO (FALLBACK)
-//confiremd
-var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/data/time_series_19-covid-Confirmed.csv";
+// MY GITHUB REPO (ARCHIVE)
+// confirmed
+var covid_confirmed_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Confirmed.csv";
+// deaths
+var covid_deaths_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+// recovered
+var covid_recovered_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Recovered.csv";
 
 // JOHNS HOPKINS REPO
 // confirmed
-var covid_confirmed_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Confirmed.csv";
+var covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
 // deaths
-var covid_deaths_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+var covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
 // recovered
-var covid_recovered_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Recovered.csv";
+var covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
 
 
-
-//
-//  CHECK URL
-//
-/*
-var url = CheckUrl(covid_confirmed_url);
-if (url == true) {
-  //url exists    
-}
-else {
-  //url not exists
-  console.log("file does not exist!")
-  covid_confirmed_url = fallback_url;
-}
-
-function CheckUrl(url) {
-  if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-    var http = new XMLHttpRequest();
+let xhr = new XMLHttpRequest();
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("confirmed url ok")
+    covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
   }
-  else {// code for IE6, IE5
-    var http = new ActiveXObject("Microsoft.XMLHTTP");
-  }
-  http.open('HEAD', url, false);
-  http.send();
-  return http.status != 404;
+} catch(err) { // instead of onerror
+  console.log("confirmed fallback")
+  covid_confirmed_url = covid_confirmed_fallback_url;
 }
-*/
+
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("deaths url ok")
+    covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
+  }
+} catch(err) { // instead of onerror
+  console.log("deaths fallback")
+  covid_deaths_url = covid_deaths_fallback_url;
+}
+
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("recovered url ok")
+    covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
+  }
+} catch(err) { // instead of onerror
+  console.log("recovered fallback")
+  covid_recovered_url = covid_recovered_fallback_url;
+}
 
 
 // SELECT BAR CHART SVG ELEMENT

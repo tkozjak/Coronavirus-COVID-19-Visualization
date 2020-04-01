@@ -3,45 +3,69 @@
 //  DATA URLs
 //
 
-// MY REPO (FALLBACK)
-//confiremd
-var fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/data/time_series_19-covid-Confirmed.csv";
+// MY GITHUB REPO (ARCHIVE)
+// confirmed
+var covid_confirmed_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Confirmed.csv";
+// deaths
+var covid_deaths_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+// recovered
+var covid_recovered_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Recovered.csv";
 
 // JOHNS HOPKINS REPO
 // confirmed
-var covid_confirmed_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Confirmed.csv";
+var covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
 // deaths
-var covid_deaths_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Deaths.csv";
+var covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
 // recovered
-var covid_recovered_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Recovered.csv";
+var covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
 
 
-//
-//  CHECK URL
-//
-/*
-var url = CheckUrl(covid_confirmed_url);
-if (url == true) {
-  //url exists    
-}
-else {
-  //url not exists
-  console.log("file does not exist!")
-  covid_confirmed_url = fallback_url;
-}
-
-function CheckUrl(url) {
-  if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
-    var http = new XMLHttpRequest();
+let xhr = new XMLHttpRequest();
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("confirmed url ok")
+    covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
   }
-  else {// code for IE6, IE5
-    var http = new ActiveXObject("Microsoft.XMLHTTP");
-  }
-  http.open('HEAD', url, false);
-  http.send();
-  return http.status != 404;
+} catch(err) { // instead of onerror
+  console.log("confirmed fallback")
+  d3.select("#title_text").html("Coronavirus Covid-19");
+  covid_confirmed_url = covid_confirmed_fallback_url;
 }
-*/
+
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("deaths url ok")
+    covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
+  }
+} catch(err) { // instead of onerror
+  console.log("deaths fallback")
+  d3.select("#title_text").html("Coronavirus Covid-19");
+  covid_deaths_url = covid_deaths_fallback_url;
+}
+
+xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv", false);
+try {
+  xhr.send();
+  if (xhr.status != 200) {
+    alert(`Error ${xhr.status}: ${xhr.statusText}`);
+  } else {
+    console.log("recovered url ok")
+    covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
+  }
+} catch(err) { // instead of onerror
+  console.log("recovered fallback")
+  d3.select("#title_text").html("Coronavirus Covid-19");
+  covid_recovered_url = covid_recovered_fallback_url;
+}
+
 
 
 // SELECT BAR CHART SVG ELEMENT
@@ -733,9 +757,9 @@ function eventDISPATCH(in_date, in_index, in_x_pos, in_table) {
   updateConfirmedBarChart(sorted_combined_data, c19_dates.indexOf(selected_date), selected_table);
 
   // global data
-  d3.select("#total_cases_text").html(c19_total_cases[c19_dates.indexOf(selected_date)]);
-  d3.select("#total_deaths_text").html(c19_total_deaths[c19_dates.indexOf(selected_date)]);
-  d3.select("#total_recovered_text").html(c19_total_recovered[c19_dates.indexOf(selected_date)]);
+  d3.select("#total_cases_text").html(c19_total_cases[c19_dates.indexOf(selected_date)].toLocaleString());
+  d3.select("#total_deaths_text").html(c19_total_deaths[c19_dates.indexOf(selected_date)].toLocaleString());
+  d3.select("#total_recovered_text").html(c19_total_recovered[c19_dates.indexOf(selected_date)].toLocaleString());
 }
 
 function markSelectedCalendarDate(x_pos) {
@@ -766,9 +790,9 @@ function changeClickedCountryProvince(index, date) {
   d3.select("#country_text").html(selected_country);
   d3.select("#province_text").html(selected_province);
 
-  d3.select("#cases_text").html(selected_cases + " " + "(+" + selected_daily_confirmmed + ")");
-  d3.select("#deaths_text").html(selected_deaths + " " + "(+" + selected_daily_deaths + ")");
-  d3.select("#recovered_text").html(selected_recovered);
+  d3.select("#cases_text").html(selected_cases.toLocaleString() + " " + "(+" + selected_daily_confirmmed.toLocaleString() + ")");
+  d3.select("#deaths_text").html(selected_deaths.toLocaleString() + " " + "(+" + selected_daily_deaths.toLocaleString() + ")");
+  d3.select("#recovered_text").html(selected_recovered.toLocaleString());
 
   SCENE_3D_UPDATE_SELECTION_RING(sorted_combined_data, index);
 }
