@@ -11,60 +11,13 @@ var covid_deaths_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coron
 // recovered
 var covid_recovered_fallback_url = "https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/UI-Rework/data/COVID19_DATA_Recovered.csv";
 
-// JOHNS HOPKINS REPO
+// DATA TABLES BASED ON JOHNS HOPKINS REPO
 // confirmed
-var covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
+var covid_confirmed_url = "data/COVID19_DATA_Confirmed.csv";
 // deaths
-var covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
+var covid_deaths_url = "data/COVID19_DATA_Deaths.csv";
 // recovered
-var covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
-
-
-let xhr = new XMLHttpRequest();
-xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv", false);
-try {
-  xhr.send();
-  if (xhr.status != 200) {
-    alert(`Error ${xhr.status}: ${xhr.statusText}`);
-  } else {
-    console.log("confirmed url ok")
-    covid_confirmed_url = "http://vinkovic.org/COVID19/COVID19_DATA_Confirmed.csv";
-  }
-} catch(err) { // instead of onerror
-  console.log("confirmed fallback")
-  d3.select("#title_text").html("Coronavirus Covid-19");
-  covid_confirmed_url = covid_confirmed_fallback_url;
-}
-
-xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv", false);
-try {
-  xhr.send();
-  if (xhr.status != 200) {
-    alert(`Error ${xhr.status}: ${xhr.statusText}`);
-  } else {
-    console.log("deaths url ok")
-    covid_deaths_url = "http://vinkovic.org/COVID19/COVID19_DATA_Deaths.csv";
-  }
-} catch(err) { // instead of onerror
-  console.log("deaths fallback")
-  d3.select("#title_text").html("Coronavirus Covid-19");
-  covid_deaths_url = covid_deaths_fallback_url;
-}
-
-xhr.open('GET', "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv", false);
-try {
-  xhr.send();
-  if (xhr.status != 200) {
-    alert(`Error ${xhr.status}: ${xhr.statusText}`);
-  } else {
-    console.log("recovered url ok")
-    covid_recovered_url = "http://vinkovic.org/COVID19/COVID19_DATA_Recovered.csv";
-  }
-} catch(err) { // instead of onerror
-  console.log("recovered fallback")
-  d3.select("#title_text").html("Coronavirus Covid-19");
-  covid_recovered_url = covid_recovered_fallback_url;
-}
+var covid_recovered_url = "data/COVID19_DATA_Recovered.csv";
 
 
 
