@@ -629,10 +629,7 @@
 
   <script src="js/three.min.js"></script> <!-- THREE JS library -->
   <script src="js/OrbitControls.js"></script> <!-- ORBIT CONTROLS library -->
-  <!-- <script src="js/d3.min.js"></script> D3 library -->
-
-  <script src="https://d3js.org/d3.v5.min.js"></script>
-  <script src="https://d3js.org/d3-fetch.v1.min.js"></script>
+  <script src="https://d3js.org/d3.v5.min.js"></script> <!-- D3 -->
 
 
   <!-- BARCHARTS -->
@@ -712,14 +709,246 @@
 
     var line_material = new THREE.LineBasicMaterial({ color: 0xffffff });
     line_material.transparent = true;
-    line_material.opacity = 0.35;
+    line_material.opacity = 0.40;
+    var state_line_material = new THREE.LineBasicMaterial({ color: 0x333355 });
+    state_line_material.transparent = true;
+    state_line_material.opacity = 0.45;
     var point_material = new THREE.PointsMaterial({ color: 0x888888 }); // not needed
 
     var countries_line_objects = [];
 
     var geoJSON_borders_url = "data/countries.geo.json"
+    var geoJSON_US_state_borders_url = "data/us-states.json"
+    var geoJSON_CANADA_provinces_borders_url = "data/canada.json"
+    var geoJSON_AUSTRALIA_provinces_borders_url = "data/Australia-states.geo.json"
+    var geoJSON_CHINA_provinces_borders_url = "data/china.json"
 
     // LOAD geoJSON
+    // US state borders
+    d3.json(geoJSON_US_state_borders_url).then(function (data) {
+
+      data.features.forEach((country, i) => {
+
+        if (country.geometry.type == "Polygon") {
+
+          let line_points = [];
+          let poly_coordinates;
+
+          // get only first poly - no holes
+          poly_coordinates = country["geometry"]["coordinates"][0];
+
+          poly_coordinates.forEach((geo_point, i) => {
+            let lon = THREE.Math.degToRad(geo_point[0] + 270);
+            let lat = THREE.Math.degToRad(geo_point[1] - 90);
+            let x = radius * Math.cos(lat) * Math.cos(lon);
+            let y = radius * Math.cos(lat) * Math.sin(lon);
+            let z = radius * Math.sin(lat);
+            v = new THREE.Vector3();
+            line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+          })
+
+          geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+          line = new THREE.Line(geometry, state_line_material);
+          scene.add(line);
+          countries_line_objects.push(line);
+        }
+        else if (country.geometry.type == "MultiPolygon") {
+
+          country.geometry.coordinates.forEach((polygon, i) => {
+            let line_points = [];
+            let poly_coordinates;
+
+            // get only first poly - no holes
+            poly_coordinates = country["geometry"]["coordinates"][i][0];
+
+            poly_coordinates.forEach((geo_point, i) => {
+              let lon = THREE.Math.degToRad(geo_point[0] + 270);
+              let lat = THREE.Math.degToRad(geo_point[1] - 90);
+              let x = radius * Math.cos(lat) * Math.cos(lon);
+              let y = radius * Math.cos(lat) * Math.sin(lon);
+              let z = radius * Math.sin(lat);
+              v = new THREE.Vector3();
+              line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+            })
+
+            geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+            line = new THREE.Line(geometry, state_line_material);
+            scene.add(line);
+            countries_line_objects.push(line);
+          })
+        }
+      })
+    });
+
+    // chinese provinces borders
+    d3.json(geoJSON_CHINA_provinces_borders_url).then(function (data) {
+
+      data.features.forEach((country, i) => {
+
+        if (country.geometry.type == "Polygon") {
+
+          let line_points = [];
+          let poly_coordinates;
+
+          // get only first poly - no holes
+          poly_coordinates = country["geometry"]["coordinates"][0];
+
+          poly_coordinates.forEach((geo_point, i) => {
+            let lon = THREE.Math.degToRad(geo_point[0] + 270);
+            let lat = THREE.Math.degToRad(geo_point[1] - 90);
+            let x = radius * Math.cos(lat) * Math.cos(lon);
+            let y = radius * Math.cos(lat) * Math.sin(lon);
+            let z = radius * Math.sin(lat);
+            v = new THREE.Vector3();
+            line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+          })
+
+          geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+          line = new THREE.Line(geometry, state_line_material);
+          scene.add(line);
+          countries_line_objects.push(line);
+        }
+        else if (country.geometry.type == "MultiPolygon") {
+
+          country.geometry.coordinates.forEach((polygon, i) => {
+            let line_points = [];
+            let poly_coordinates;
+
+            // get only first poly - no holes
+            poly_coordinates = country["geometry"]["coordinates"][i][0];
+
+            poly_coordinates.forEach((geo_point, i) => {
+              let lon = THREE.Math.degToRad(geo_point[0] + 270);
+              let lat = THREE.Math.degToRad(geo_point[1] - 90);
+              let x = radius * Math.cos(lat) * Math.cos(lon);
+              let y = radius * Math.cos(lat) * Math.sin(lon);
+              let z = radius * Math.sin(lat);
+              v = new THREE.Vector3();
+              line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+            })
+
+            geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+            line = new THREE.Line(geometry, state_line_material);
+            scene.add(line);
+            countries_line_objects.push(line);
+          })
+        }
+      })
+    });
+
+    // canadina provinces borders
+    d3.json(geoJSON_CANADA_provinces_borders_url).then(function (data) {
+
+      data.features.forEach((country, i) => {
+
+        if (country.geometry.type == "Polygon") {
+
+          let line_points = [];
+          let poly_coordinates;
+
+          // get only first poly - no holes
+          poly_coordinates = country["geometry"]["coordinates"][0];
+
+          poly_coordinates.forEach((geo_point, i) => {
+            let lon = THREE.Math.degToRad(geo_point[0] + 270);
+            let lat = THREE.Math.degToRad(geo_point[1] - 90);
+            let x = radius * Math.cos(lat) * Math.cos(lon);
+            let y = radius * Math.cos(lat) * Math.sin(lon);
+            let z = radius * Math.sin(lat);
+            v = new THREE.Vector3();
+            line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+          })
+
+          geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+          line = new THREE.Line(geometry, state_line_material);
+          scene.add(line);
+          countries_line_objects.push(line);
+        }
+        else if (country.geometry.type == "MultiPolygon") {
+
+          country.geometry.coordinates.forEach((polygon, i) => {
+            let line_points = [];
+            let poly_coordinates;
+
+            // get only first poly - no holes
+            poly_coordinates = country["geometry"]["coordinates"][i][0];
+
+            poly_coordinates.forEach((geo_point, i) => {
+              let lon = THREE.Math.degToRad(geo_point[0] + 270);
+              let lat = THREE.Math.degToRad(geo_point[1] - 90);
+              let x = radius * Math.cos(lat) * Math.cos(lon);
+              let y = radius * Math.cos(lat) * Math.sin(lon);
+              let z = radius * Math.sin(lat);
+              v = new THREE.Vector3();
+              line_points.push(v.setFromSphericalCoords(radius + 0.005, lat, lon));
+            })
+
+            geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+            line = new THREE.Line(geometry, state_line_material);
+            scene.add(line);
+            countries_line_objects.push(line);
+          })
+        }
+      })
+    });
+
+    // australian states borders
+    d3.json(geoJSON_AUSTRALIA_provinces_borders_url).then(function (data) {
+
+      data.features.forEach((country, i) => {
+
+        if (country.geometry.type == "Polygon") {
+
+          let line_points = [];
+          let poly_coordinates;
+
+          // get only first poly - no holes
+          poly_coordinates = country["geometry"]["coordinates"][0];
+
+          poly_coordinates.forEach((geo_point, i) => {
+            let lon = THREE.Math.degToRad(geo_point[0] + 270);
+            let lat = THREE.Math.degToRad(geo_point[1] - 90);
+            let x = radius * Math.cos(lat) * Math.cos(lon);
+            let y = radius * Math.cos(lat) * Math.sin(lon);
+            let z = radius * Math.sin(lat);
+            v = new THREE.Vector3();
+            line_points.push(v.setFromSphericalCoords(radius + 0.04, lat, lon));
+          })
+
+          geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+          line = new THREE.Line(geometry, state_line_material);
+          scene.add(line);
+          countries_line_objects.push(line);
+        }
+        else if (country.geometry.type == "MultiPolygon") {
+
+          country.geometry.coordinates.forEach((polygon, i) => {
+            let line_points = [];
+            let poly_coordinates;
+
+            // get only first poly - no holes
+            poly_coordinates = country["geometry"]["coordinates"][i][0];
+
+            poly_coordinates.forEach((geo_point, i) => {
+              let lon = THREE.Math.degToRad(geo_point[0] + 270);
+              let lat = THREE.Math.degToRad(geo_point[1] - 90);
+              let x = radius * Math.cos(lat) * Math.cos(lon);
+              let y = radius * Math.cos(lat) * Math.sin(lon);
+              let z = radius * Math.sin(lat);
+              v = new THREE.Vector3();
+              line_points.push(v.setFromSphericalCoords(radius + 0.04, lat, lon));
+            })
+
+            geometry = new THREE.BufferGeometry().setFromPoints(line_points);
+            line = new THREE.Line(geometry, state_line_material);
+            scene.add(line);
+            countries_line_objects.push(line);
+          })
+        }
+      })
+    });
+
+    // countries borders
     d3.json(geoJSON_borders_url).then(function (data) {
 
       data.features.forEach((country, i) => {
@@ -739,7 +968,7 @@
             let y = radius * Math.cos(lat) * Math.sin(lon);
             let z = radius * Math.sin(lat);
             v = new THREE.Vector3();
-            line_points.push(v.setFromSphericalCoords(radius + 0.01, lat, lon));
+            line_points.push(v.setFromSphericalCoords(radius + 0.02, lat, lon));
           })
 
           geometry = new THREE.BufferGeometry().setFromPoints(line_points);
@@ -763,7 +992,7 @@
               let y = radius * Math.cos(lat) * Math.sin(lon);
               let z = radius * Math.sin(lat);
               v = new THREE.Vector3();
-              line_points.push(v.setFromSphericalCoords(radius + 0.01, lat, lon));
+              line_points.push(v.setFromSphericalCoords(radius + 0.02, lat, lon));
             })
 
             geometry = new THREE.BufferGeometry().setFromPoints(line_points);
@@ -774,6 +1003,8 @@
         }
       })
     });
+
+
 
 
     // GLOBE
@@ -794,19 +1025,19 @@
 
 
     //var globe_sphere_diff_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-day-gradient.jpg');
-    var globe_sphere_diff_tex             = new THREE.TextureLoader().load('textures/earth-day-gradient.jpg');
-    globe_sphere_diff_tex.magFilter       = THREE.LinearFilter;
-    globe_sphere_diff_tex.minFilter       = THREE.LinearFilter;
+    var globe_sphere_diff_tex = new THREE.TextureLoader().load('textures/earth-day-gradient.jpg');
+    globe_sphere_diff_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_diff_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_diff_tex.generateMipmaps = false;
-    globe_sphere_diff_tex.encoding        = THREE.sRGBEncoding;
-    globe_sphere_diff_tex.anisotropy      = 16;
+    globe_sphere_diff_tex.encoding = THREE.sRGBEncoding;
+    globe_sphere_diff_tex.anisotropy = 16;
 
     //var globe_sphere_spec_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-specular.jpg');
-    var globe_sphere_spec_tex             = new THREE.TextureLoader().load('textures/earth-specular.jpg');
-    globe_sphere_spec_tex.magFilter       = THREE.LinearFilter;
-    globe_sphere_spec_tex.minFilter       = THREE.LinearFilter;
+    var globe_sphere_spec_tex = new THREE.TextureLoader().load('textures/earth-specular.jpg');
+    globe_sphere_spec_tex.magFilter = THREE.LinearFilter;
+    globe_sphere_spec_tex.minFilter = THREE.LinearFilter;
     //globe_sphere_spec_tex.generateMipmaps = false;
-    globe_sphere_spec_tex.anisotropy      = 16;
+    globe_sphere_spec_tex.anisotropy = 16;
 
     /*
     //var globe_sphere_bump_tex = new THREE.TextureLoader().load('https://raw.githubusercontent.com/tkozjak/Coronavirus-COVID-19-Visualization/master/textures/earth-topo.jpg');
@@ -838,7 +1069,7 @@
         shininess: 8,
         //bumpMap: globe_sphere_bump_tex,
         //bumpScale: 0.5,
-        emissive: emission_color,        
+        emissive: emission_color,
         emissiveIntensity: 0.0
       });
       globe_sphere_obj = new THREE.Mesh(globe_sphere_geo, globe_sphere_mat);
