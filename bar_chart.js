@@ -1,4 +1,7 @@
 
+// replace console outputs w empty function
+console.log = function () { };
+
 //
 //  DATA URLs
 //
